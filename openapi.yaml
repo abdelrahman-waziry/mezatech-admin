@@ -1,0 +1,1447 @@
+openapi: 3.0.0
+info:
+  title: Mezatech Backend API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: Products
+    description: API operations related to products
+  - name: Brands
+    description: API operations related to brands
+  - name: Tags
+    description: API operations related to tags
+  - name: Variants
+    description: API operations related to variants
+  - name: Features
+    description: API operations related to features
+  - name: Parts
+    description: API operations related to Parts
+
+paths:
+  /v1/products:
+    get:
+      tags:
+        - Products
+      summary: Get all products
+      operationId: getProducts
+      parameters:
+        - name: name
+          in: query
+          required: false
+          schema:
+              type: string
+        - name: tags
+          in: query
+          required: false
+          schema:
+              type: array
+              items:
+                type: string
+        - name: minPrice
+          in: query
+          required: false
+          schema:
+              type: number
+        - name: maxPrice
+          in: query
+          required: false
+          schema:
+              type: number
+        - name: brands
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: int64
+        - name: condition
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductsResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    post:
+      tags:
+        - Products
+      summary: Create a new product
+      operationId: createProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductDTO'
+      responses:
+        '201':
+          description: Product created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /v1/products/{id}:
+    get:
+      tags:
+        - Products
+      summary: Get a product by ID
+      operationId: getProduct
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: includeParts
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Product details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDTO'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    put:
+      tags:
+        - Products
+      summary: Update a product
+      operationId: updateProduct
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductDTO'
+      responses:
+        '200':
+          description: Product updated
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    delete:
+      tags:
+        - Products
+      summary: Delete a product
+      operationId: deleteProduct
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Product deleted
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+
+  /v1/products/calculate:
+    post:
+      tags:
+        - Products
+      summary: Calculate product price
+      operationId: calculateProductPrice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductPriceCalculationRequest'
+      responses:
+        '200':
+          description: Calculated product price
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductPriceInfoDTO'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /v1/brands:
+    get:
+      tags:
+        - Brands
+      summary: Get all brands
+      operationId: getBrands
+      responses:
+        '200':
+          description: List of brands
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BrandsResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    post:
+      tags:
+        - Brands
+      summary: Create a new brand
+      operationId: createBrand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BrandDTO'
+      responses:
+        '201':
+          description: Brand created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /v1/brands/{id}:
+    get:
+      tags:
+        - Brands
+      summary: Get a brand by ID
+      operationId: getBrand
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Brand details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BrandDTO'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    put:
+      tags:
+        - Brands
+      summary: Update a brand
+      operationId: updateBrand
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BrandDTO'
+      responses:
+        '200':
+          description: Brand updated
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    delete:
+      tags:
+        - Brands
+      summary: Delete a brand
+      operationId: deleteBrand
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Brand deleted
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+
+  /v1/parts:
+    get:
+      tags:
+        - Parts
+      summary: Get all parts
+      operationId: getParts
+      parameters:
+        - name: productId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: List of parts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartsResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    post:
+      tags:
+        - Parts
+      summary: Create a new part
+      operationId: createPart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePartDTO'
+      responses:
+        '201':
+          description: Part created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /v1/parts/{id}:
+    get:
+      tags:
+        - Parts
+      summary: Get a part by ID
+      operationId: getPart
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Part details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartDTO'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    put:
+      tags:
+        - Parts
+      summary: Update a part
+      operationId: updatePart
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePartDTO'
+      responses:
+        '200':
+          description: Part updated
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    delete:
+      tags:
+        - Parts
+      summary: Delete a part
+      operationId: deletePart
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Part deleted
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+
+  /v1/tags:
+    get:
+      tags:
+        - Tags
+      summary: Get all tags
+      operationId: getTags
+      responses:
+        '200':
+          description: List of tags
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagsResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    post:
+      tags:
+        - Tags
+      summary: Create a new tag
+      operationId: createTag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagDTO'
+      responses:
+        '201':
+          description: Tag created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /v1/tags/{id}:
+    get:
+      tags:
+        - Tags
+      summary: Get a tag by ID
+      operationId: getTag
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Tag details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagDTO'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    put:
+      tags:
+        - Tags
+      summary: Update a tag
+      operationId: updateTag
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagDTO'
+      responses:
+        '200':
+          description: Tag updated
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    delete:
+      tags:
+        - Tags
+      summary: Delete a tag
+      operationId: deleteTag
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Tag deleted
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+
+  /v1/variants:
+    get:
+      tags:
+        - Variants
+      summary: Get all variants
+      operationId: getVariants
+      parameters:
+        - name: productId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: List of variants
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VariantsResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    post:
+      tags:
+        - Variants
+      summary: Create a new variant
+      operationId: createVariant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVariantDTO'
+      responses:
+        '201':
+          description: Variant created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /v1/variants/{id}:
+    get:
+      tags:
+        - Variants
+      summary: Get a variant by ID
+      operationId: getVariant
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Variant details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VariantDTO'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    put:
+      tags:
+        - Variants
+      summary: Update a variant
+      operationId: updateVariant
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVariantDTO'
+      responses:
+        '200':
+          description: Variant updated
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    delete:
+      tags:
+        - Variants
+      summary: Delete a variant
+      operationId: deleteVariant
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Variant deleted
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /v1/features:
+    get:
+      tags:
+        - Features
+      summary: Get all features
+      operationId: getFeatures
+      responses:
+        '200':
+          description: List of features
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeaturesResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    post:
+      tags:
+        - Features
+      summary: Create a new feature
+      operationId: createFeature
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeatureDTO'
+      responses:
+        '201':
+          description: Feature created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /v1/features/{id}:
+    get:
+      tags:
+        - Features
+      summary: Get a feature by ID
+      operationId: getFeature
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Feature details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeatureDTO'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    put:
+      tags:
+        - Features
+      summary: Update a feature
+      operationId: updateFeature
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeatureDTO'
+      responses:
+        '200':
+          description: Feature updated
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    delete:
+      tags:
+        - Features
+      summary: Delete a feature
+      operationId: deleteFeature
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Feature deleted
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+
+  /v1/admin/customers:
+    get:
+      tags:
+        - Customers
+      summary: Get all customers
+      operationId: getCustomers
+      responses:
+        '200':
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomersResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    post:
+      tags:
+        - Customers
+      summary: Create a new customer
+      operationId: createCustomer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDTO'
+      responses:
+        '201':
+          description: Customer created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /v1/admin/customers/{id}:
+    get:
+      tags:
+        - Customers
+      summary: Get a customer by ID
+      operationId: getCustomer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Customer details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    put:
+      tags:
+        - Customers
+      summary: Update a customer
+      operationId: updateCustomer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDTO'
+      responses:
+        '200':
+          description: Customer updated
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    delete:
+      tags:
+        - Customers
+      summary: Delete a customer
+      operationId: deleteCustomer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Customer deleted
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+
+  /v1/admin/login:
+   post:
+      tags:
+        - Login
+      summary: login
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginDTO'
+      responses:
+        '200':
+          description: logged in
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+
+  /v1/files:
+    get:
+      tags:
+        - Files
+      summary: Serve a file
+      operationId: serveFile
+      parameters:
+        - name: filename
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: width
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: File stream
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+
+    post:
+      tags:
+        - Files
+      summary: Upload a file
+      operationId: uploadFile
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                request:
+                  $ref: '#/components/schemas/FileUploadRequest'
+                file:
+                  type: string
+                  format: binary
+              required:
+                - request
+                - file
+      responses:
+        '201':
+          description: File uploaded
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+    delete:
+      tags:
+        - Files
+      summary: Delete a file
+      operationId: deleteFile
+      parameters:
+        - name: filename
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: entityType
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: File deleted
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+components:
+  schemas:
+    ProductsResponse:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListProductDTO'
+    FeatureValueDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        value:
+          type: string
+        image:
+          type: string
+    FeatureDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureValueDTO'
+        productId:
+          type: integer
+          format: int64
+    SingleFeatureDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureValueDTO'
+
+    ProductFeatureDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureValueDTO'
+    BrandDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        image:
+          type: string
+    SubDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+    PartDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        price:
+          type: number
+        type:
+          type: integer
+        condition:
+          type: integer
+        info:
+          type: string
+
+    CreatePartDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        price:
+          type: number
+        type:
+          type: integer
+        condition:
+          type: integer
+        info:
+          type: string
+        product:
+          $ref: '#/components/schemas/SubDTO'
+    VariantDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        stock:
+          type: integer
+        priceBeforeDiscount:
+          type: number
+        discount:
+          type: number
+        priceAfterDiscount:
+          type: number
+        buyingPrice:
+          type: number
+        variantFeatures:
+          type: array
+          items:
+            $ref: '#/components/schemas/SingleVariantFeatureDTO'
+
+    CreateVariantDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        stock:
+          type: integer
+        priceBeforeDiscount:
+          type: number
+        discount:
+          type: number
+        priceAfterDiscount:
+          type: number
+        buyingPrice:
+          type: number
+        variantFeatures:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateVariantFeatureDTO'
+        product:
+          $ref: '#/components/schemas/SubDTO'
+
+    TagDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+
+    VariantFeatureDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        feature:
+          $ref: '#/components/schemas/SingleFeatureDTO'
+        featureValue:
+          $ref: '#/components/schemas/FeatureValueDTO'
+        variant:
+          $ref: '#/components/schemas/VariantDTO'
+
+    SingleVariantFeatureDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        feature:
+          $ref: '#/components/schemas/SingleFeatureDTO'
+        featureValue:
+          $ref: '#/components/schemas/FeatureValueDTO'
+
+    CreateVariantFeatureDTO:
+      type: object
+      properties:
+        feature:
+          $ref: '#/components/schemas/SubDTO'
+        featureValue:
+          $ref: '#/components/schemas/SubDTO'
+
+    UserDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        email:
+          type: string
+        phoneNumber:
+          type: string
+        password:
+          type: string
+
+    CustomerDTO:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phoneNumber:
+          type: string
+
+    BrandsResponse:
+      type: object
+      properties:
+        brands:
+          type: array
+          items:
+            $ref: '#/components/schemas/BrandDTO'
+    PartsResponse:
+      type: object
+      properties:
+        parts:
+          type: array
+          items:
+            $ref: '#/components/schemas/PartDTO'
+    TagsResponse:
+      type: object
+      properties:
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagDTO'
+    VariantsResponse:
+      type: object
+      properties:
+        variants:
+          type: array
+          items:
+            $ref: '#/components/schemas/VariantDTO'
+    FeaturesResponse:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureDTO'
+    CustomersResponse:
+      type: object
+      properties:
+        customers:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserDTO'
+    ProductDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type: string
+        sku:
+          type: string
+        minimumBuyingPrice:
+          type: number
+        wastePrice:
+          type: number
+        condition:
+          type: integer
+          description: 0 is new, 1 is used, 2 is received from customer but not ready to be displayed, 3 is not received from customer
+        brand:
+          $ref: '#/components/schemas/BrandDTO'
+        variants:
+          type: array
+          items:
+            $ref: '#/components/schemas/VariantDTO'
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductFeatureDTO'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagDTO'
+        parts:
+          type: array
+          items:
+            $ref: '#/components/schemas/PartDTO'
+        images:
+          type: array
+          items:
+              type: string
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        serialNumber:
+          type: string
+        imei:
+          type: string
+
+    CreateProductDTO:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        sku:
+          type: string
+        minimumBuyingPrice:
+          type: number
+        wastePrice:
+          type: number
+        condition:
+          type: integer
+          description: 0 is new, 1 is used, 2 is received from customer but not ready to be displayed, 3 is not received from customer
+        brand:
+          $ref: '#/components/schemas/SubDTO'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubDTO'
+        notes:
+          type: string
+
+    ListProductDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type: string
+        sku:
+          type: string
+        minimumBuyingPrice:
+          type: number
+        wastePrice:
+          type: number
+        condition:
+          type: integer
+          description: 0 is new, 1 is used, 2 is received from customer but not ready to be displayed, 3 is not received from customer
+        brand:
+          $ref: '#/components/schemas/BrandDTO'
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductFeatureDTO'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagDTO'
+        images:
+          type: array
+          items:
+            type: string
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        serialNumber:
+          type: string
+        imei:
+          type: string
+
+    LoginDTO:
+      type: object
+      properties:
+          email:
+            type: string
+          password:
+            type: string
+
+    ProductPriceCalculationRequest:
+      type: object
+      properties:
+        variantId:
+          type: integer
+          format: int64
+        repairedPartsBefore:
+          type: array
+          items:
+            type: integer
+            format: int64
+        partsWithValuesMap:
+          type: object
+          description: A map with partId as key and part condition as value
+          additionalProperties:
+            type: string
+        customer:
+          $ref: '#/components/schemas/CustomerDTO'
+      required:
+        - variantId
+        - repairedPartsBefore
+        - partsWithValuesMap
+
+    ProductPriceInfoDTO:
+      type: object
+      properties:
+        price:
+          type: number
+
+    FileUploadRequest:
+      type: object
+      properties:
+        entityType:
+          type: string
+          description: Type of the owning entity (e.g. product, variant)
+        entityId:
+          type: integer
+          format: int64
+          description: ID of the owning entity
+      required:
+        - entityType
+        - entityId

@@ -1,0 +1,848 @@
+type: collection.insomnia.rest/5.0
+name: Scratch Pad
+meta:
+  id: wrk_scratchpad
+  created: 1740056358265
+  modified: 1740056358265
+collection:
+  - name: Mezatech
+    meta:
+      id: fld_1c1e8fa39b894670a6685d5688d78ba0
+      created: 1749980369032
+      modified: 1765225369803
+      sortKey: -1749980367219
+    children:
+      - name: Brands
+        meta:
+          id: fld_54f3c1cc88ff4ad19c3d4931a7808953
+          created: 1749980369033
+          modified: 1751375704301
+          sortKey: -1749980367218
+        children:
+          - url: "{{url}}/v1/brands"
+            name: Add brand
+            meta:
+              id: req_70a17079adcd421ead9b1423649de387
+              created: 1749980369034
+              modified: 1765225050061
+              isPrivate: false
+              sortKey: -1749980367214.5
+            method: POST
+            body:
+              mimeType: application/json
+              text: '{"name":"brand1"}'
+            headers:
+              - name: Content-Type
+                value: application/json
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{url}}/v1/brands"
+            name: brands
+            meta:
+              id: req_f3d3ab448604472980a9b9303eb36089
+              created: 1749980369035
+              modified: 1765225005557
+              isPrivate: false
+              sortKey: -1749980367216
+            method: GET
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{url}}/v1/brands/1000"
+            name: Brand
+            meta:
+              id: req_9c2a8a0370ad4e2dacc59e864738a6d0
+              created: 1749980369036
+              modified: 1765225015756
+              isPrivate: false
+              sortKey: -1749980367215
+            method: GET
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{url}}/v1/brands/1000"
+            name: brand
+            meta:
+              id: req_65601e3573074516bba7d5c962dc3be4
+              created: 1749980369037
+              modified: 1765225093596
+              isPrivate: false
+              sortKey: -1749980367213
+            method: DELETE
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{url}}/v1/brands/1000"
+            name: Update brand
+            meta:
+              id: req_805338ae61554a5ebcf78c8e6775cfb9
+              created: 1749980369037
+              modified: 1765225082590
+              isPrivate: false
+              sortKey: -1749980367214
+            method: PUT
+            body:
+              mimeType: application/json
+              text: '{"name":"brand1000"}'
+            headers:
+              - name: Content-Type
+                value: application/json
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Products
+        meta:
+          id: fld_58d299dfbe8e4fc3b9f6618fa0e2a99c
+          created: 1749980369038
+          modified: 1765224963903
+          sortKey: -1749980367212
+        children:
+          - url: "{{url}}/v1/products"
+            name: products
+            meta:
+              id: req_0455eb953d924ea683e42110f7cd0cf2
+              created: 1749980369039
+              modified: 1765225119577
+              isPrivate: false
+              sortKey: -1749980367211
+            method: GET
+            parameters:
+              - id: pair_76d6361b51f54bd2a2fa3d61d8fd961d
+                name: name
+                value: "11"
+                disabled: true
+              - id: pair_e3c479eda9554828b8a00d2fc1d90a3c
+                name: tags
+                value: iPhone
+                disabled: true
+              - id: pair_a5da0451ed6442ac88a37d359e0c5e17
+                name: minPrice
+                value: "1000"
+                disabled: true
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{url}}/v1/products/10"
+            name: product
+            meta:
+              id: req_9978482d64e6401da2b11979b0d1df4d
+              created: 1749980369039
+              modified: 1765225196217
+              isPrivate: false
+              sortKey: -1749980367210
+            method: GET
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{url}}/v1/products/1000"
+            name: Add product
+            meta:
+              id: req_919feb4c7bef42eeb0a3af931c2f061c
+              created: 1749980369040
+              modified: 1765225760125
+              isPrivate: false
+              sortKey: -1749980367209
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "name": "Product333",
+                    "description": "good product",
+                    "condition": 0,
+                    "notes": "good notes",
+                    "minimumBuyingPrice": 900.80,
+                    "wastePrice": 250.00,
+                    "tags": [
+                        {"id":1001}
+                    ],
+                    "brand": {"id": 1000}
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{url}}/v1/products/1000"
+            name: Update product
+            meta:
+              id: req_466af16f8cc34a0c95db83223aaaa6db
+              created: 1749990471859
+              modified: 1765225151610
+              isPrivate: false
+              sortKey: -1749980367208
+            method: PUT
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "name": "Product555",
+                    "description": "good product",
+                    "condition": 0,
+                    "notes": "good notes",
+                    "minimumBuyingPrice": 11,
+                    "wastePrice": 12,
+                    "tags": [
+                        {"id":1000}
+                    ],
+                    "brand": {"id": 1000}
+
+                    }
+            headers:
+              - name: Content-Type
+                value: application/json
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{url}}/v1/products/1000"
+            name: product
+            meta:
+              id: req_9f9ac955a7174bd3a47b556909a9f6cb
+              created: 1750088133264
+              modified: 1765225160720
+              isPrivate: false
+              sortKey: -1749980367108
+            method: DELETE
+            headers:
+              - name: User-Agent
+                value: insomnia/11.1.0
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{url}}/v1/products/calculate"
+            name: calculate price
+            meta:
+              id: req_3101c98a5ab94c18abafc9acdd24ff31
+              created: 1754677300774
+              modified: 1765224854658
+              isPrivate: false
+              sortKey: -1750285803538.5
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                	"variantId": 1,
+                	"customer": {
+                		"name": "MR. X",
+                		"email": "user@fixtech.com",
+                		"phoneNumber": "+21234567891"
+                	},
+                	"repairedPartsBefore": [],
+                	"partsWithValuesMap": {
+                		"1": 1,
+                		"2": 0,
+                		"3": 100,
+                		"4": 3,
+                		"5": 3,
+                		"6": 1,
+                		"7": 1,
+                		"8": 1,
+                		"9": 1,
+                		"10": 1,
+                		"11": 1,
+                		"12": 1,
+                		"13": 1,
+                		"14": 1,
+                		"15": 1,
+                		"16": 1,
+                		"17": 1,
+                		"18": 1,
+                		"19": 1,
+                		"20": 1,
+                		"21": 1,
+                		"22": 1,
+                		"23": 1,
+                		"24": 1,
+                		"25": 1,
+                		"26": 1
+                	}
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.1.0
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Variants
+        meta:
+          id: fld_d2fd167f3aa54e549c29611d86a99165
+          created: 1749980369040
+          modified: 1750286187511
+          sortKey: -1749980367208
+        children:
+          - url: "{{url}}/v1/variants/801"
+            name: variant
+            meta:
+              id: req_98dd00d059394f3cb39f18f929492367
+              created: 1749980369041
+              modified: 1765225237713
+              isPrivate: false
+              sortKey: -1750285331377
+            method: GET
+            authentication:
+              type: bearer
+              token: yJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiQWhtYWQiLCJlbWFpbCI6ImFAYi5jIiwic3ViIjoiYUBiLmMiLCJpYXQiOjE3NTg4MzQ5OTYsImV4cCI6MTc1ODkyMTM5Nn0.nGxLFJIc8LY5AMo9Si-3v16TB1dfgenRSWbY2sY1SUU
+              disabled: true
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{url}}/v1/variants?productId=50"
+            name: variants
+            meta:
+              id: req_9ceff41f1d1d4763a6ded675ebe4e653
+              created: 1749980369042
+              modified: 1765225390718
+              isPrivate: false
+              sortKey: -1750285331477
+            method: GET
+            parameters:
+              - name: productId
+                value: "1000"
+                disabled: false
+                id: pair_0071909089414034b3ed0244f01b0e4b
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{url}}/v1/variants"
+            name: Add variant
+            meta:
+              id: req_2ede86fac36049e0b97acbb0bfdff8fe
+              created: 1750281857166
+              modified: 1765225244216
+              isPrivate: false
+              sortKey: -1750285331327
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                	"name": "Variant 888",
+                	"buyingPrice": 100,
+                	"priceBeforeDiscount": 9999,
+                	"discount": 999,
+                	"priceAfterDiscount": 9000,
+                	"stock": 10,
+                	"variantFeatures": [
+                		{
+                			"feature": {
+                				"id": 1000
+                			},
+                			"featureValue": {
+                				"id": 1001
+                			}
+                		}
+                	],
+                	"product": {
+                		"id":13
+                	}
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.1.0
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{url}}/v1/variants/8"
+            name: Update variant
+            meta:
+              id: req_291fa5b55651467e9ad85b6f72421295
+              created: 1750285331277
+              modified: 1765225250987
+              isPrivate: false
+              sortKey: -1750285331277
+            method: PUT
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                	"name": "Variant 47297",
+                	"buyingPrice": 1,
+                	"priceBeforeDiscount": 2,
+                	"discount": 3,
+                	"priceAfterDiscount": 4,
+                	"stock": 5,
+                	"variantFeatures": [
+                		{
+                			"feature": {
+                				"id": 1000
+                			},
+                			"featureValue": {
+                				"id": 1000
+                			}
+                		}
+                	],
+                	"product": {
+                		"id":13
+                	}
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.1.0
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{url}}v1/variants/1000"
+            name: variant
+            meta:
+              id: req_9e3ba1452d094fcda43eb5eb32e83dac
+              created: 1750286182850
+              modified: 1765225260160
+              isPrivate: false
+              sortKey: -1749980367106
+            method: DELETE
+            headers:
+              - name: User-Agent
+                value: insomnia/11.1.0
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Files
+        meta:
+          id: fld_a38fac63234a49d3855cf83d848799cc
+          created: 1749980369042
+          modified: 1749980369042
+          sortKey: -1749980367205
+        children:
+          - url: "{{url}}/v1/files"
+            name: image
+            meta:
+              id: req_396c6312c34b4ea098386feabda74ead
+              created: 1749980369043
+              modified: 1765225273480
+              isPrivate: false
+              sortKey: -1749980367204
+            method: POST
+            body:
+              params:
+                - type: file
+                  name: request
+                  disabled: false
+                  fileName: /C:/Users/ThinkTech/Downloads/request.json
+                - type: file
+                  name: file
+                  disabled: false
+                  fileName: /C:/Users/ThinkTech/Downloads/Personal/1.jpeg
+              mimeType: multipart/form-data
+            headers:
+              - name: Content-Type
+                value: multipart/form-data
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{url}}/v1/files"
+            name: file
+            meta:
+              id: req_b9e1b23082b1415088cc1a6cb278f441
+              created: 1749980369043
+              modified: 1765225280600
+              isPrivate: false
+              sortKey: -1749980367203
+            method: GET
+            parameters:
+              - name: filename
+                value: images/product/1000/7-3-_1749647660923.png
+                disabled: false
+              - name: width
+                value: "265"
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{url}}/v1/files"
+            name: file
+            meta:
+              id: req_dbea6895847f4378b6b5c16d6ccce646
+              created: 1749980369044
+              modified: 1765225291480
+              isPrivate: false
+              sortKey: -1749980367202
+            method: DELETE
+            parameters:
+              - name: filename
+                value: images/product/1000/7-3-_1749647660923.png
+                disabled: false
+              - name: entityType
+                value: product
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Parts
+        meta:
+          id: fld_488734cb39514e0e98a4b0980de28e75
+          created: 1751375631167
+          modified: 1751375631167
+          sortKey: -1751375631167
+        children:
+          - url: "{{url}}/v1/parts?productId=1"
+            name: Parts
+            meta:
+              id: req_26a832ab4a544b21b84efc49a0659c83
+              created: 1751061940159
+              modified: 1765224993642
+              isPrivate: false
+              sortKey: -1751375702265
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/11.1.0
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{url}}/v1/parts/345"
+            name: Part
+            meta:
+              id: req_6ba3c41de29f462191ea693655190d4a
+              created: 1765225553953
+              modified: 1765225831299
+              isPrivate: false
+              sortKey: -1765225553953
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/11.1.0
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{url}}/v1/parts"
+            name: Add part
+            meta:
+              id: req_5342941b5d0f4f4eaa93f91be54acd39
+              created: 1765225651741
+              modified: 1765225891625
+              isPrivate: false
+              sortKey: -1765225651741
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "name": "Ear speaker",
+                  "price": 200,
+                  "type": 7,
+                  "product": {
+                    "id": 1
+                	}
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.1.0
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{url}}/v1/parts/365"
+            name: Update part
+            meta:
+              id: req_8890ed8af9c44465a70099ae491a4693
+              created: 1765225903003
+              modified: 1765226030789
+              isPrivate: false
+              sortKey: -1765225903003
+            method: PUT
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "name": "Ear speaker",
+                  "price": 200,
+                  "type": 7,
+                	"info": "{\"price1\": 70, \"price2\": 95, \"price3\": 130}",
+                  "product": {
+                    "id": 1
+                	}
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.1.0
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{url}}/v1/parts/365"
+            name: New Request
+            meta:
+              id: req_ccb222b393a14b179765630ade34a61d
+              created: 1765226047838
+              modified: 1765226057635
+              isPrivate: false
+              sortKey: -1765226047838
+            method: DELETE
+            headers:
+              - name: User-Agent
+                value: insomnia/11.1.0
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Admin
+        meta:
+          id: fld_27f4a3c8de9b4b10ad309afb3ae619fe
+          created: 1765224220674
+          modified: 1765225369803
+          sortKey: -1765224220674
+        children:
+          - url: "{{url}}/v1/admin/login"
+            name: Login
+            meta:
+              id: req_9fdf49ef03d04acf969e2573970d4a57
+              created: 1758832111793
+              modified: 1765224869276
+              isPrivate: false
+              sortKey: -1765224242287
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "email": "a@b.c",
+                  "password": "123654789@A!"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.1.0
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                     insomnia.expect(insomnia.response.code).to.eql(200);
+                      
+                     if (insomnia.response.code){
+                       const jsonBody = insomnia.response.json();
+                       insomnia.environment.set("token", jsonBody.token);
+                     }
+                 });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+    authentication:
+      type: bearer
+      token: "{{token}}"
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_99d30891da4bdcebc63947a8fc17f076de878684
+    created: 1740056372680
+    modified: 1765225369801
+  cookies:
+    - id: 631d5311-b772-44ad-b4dd-d0be4b86ef87
+      key: NID
+      value: 521=riB7rC1wH5xH6bgd7m5NakgAAY_6UE8A7Rk_OuKzkJnimEY29nkrjQ-dyBAUDxIoffVC95zIGT-zauIfzdwOWEUWWKGyjwSPWaI--WlJx66bY-szVQ-ar-EAlEQl8BZJHIcTwOxqFyU8pr42-LDONFEOYffhg-gU7jAZY2LhsuGCn9xv371YJ2rDl-E
+      domain: google.com
+      path: /
+      secure: false
+      httpOnly: true
+      creation: 2025-02-20T12:59:53.200Z
+      lastAccessed: 2025-02-20T12:59:53.200Z
+    - id: 019cb23d-ae09-4e13-bdee-d0feb0eca4fa
+      key: COMPASS
+      value: apps-spreadsheets=CmUACWuJV-5VhaY67EuuTkNhLEsiH4qU4QwNpM942OSKjd95zT1JL5od0bMMl9hNc4vzlkwXoHfXCpIGXhQHxwl0NKrtSwFJ0tsKYgGU--vLkW6vKm--tedYUj3UYpx1pK9Qg8d5HhDFmd29Bhp2AAlriVfkfZ7SDXOJJ-Fx7gZUG97ncE86koZY-uygb8-XwLGH2uMu65dogplUmL6t-Ytxgw30wzkHIsx2CMnwcg37gJenSUyR3i91bL9dhrQv1OwW-EIqf3SxWwZttg-z4IQGf9Zrv_xAQ1lKLW3M3Ij36iPpXw==
+      domain: docs.google.com
+      path: /a/google.com/spreadsheets/d/1j2Z9l8cUX2AXh_P0lHo_UOVnwG6q-MuYoEoLvGtjVvg
+      secure: true
+      httpOnly: true
+      creation: 2025-02-20T14:39:50.662Z
+      lastAccessed: 2025-02-20T14:39:50.662Z
+    - id: 98b4445a-f0db-4b86-8fce-9a53952d746e
+      key: GFE_RTT
+      value: "201"
+      domain: docs.google.com
+      path: /
+      secure: true
+      httpOnly: false
+      creation: 2025-02-20T12:59:53.203Z
+      lastAccessed: 2025-02-20T12:59:53.203Z
+    - id: 395e3151-5448-41e9-93b8-b175f9f8d49e
+      key: __csrf_ru7
+      value: IndSdnJQVW5vNkthbkFPdXVZV2dBbjAxSlFJWVQ2T1hPVTNaS2d1cEVfWWhxM0c0Z0d1cVd5SzJza29wdXBlbnZ1SnpQTzhfRFRVeHpxNXZ6RDBJSlhnIg%3D%3D.ImtDbmZCOanbPVlRGR%2Fl2KMUBBhv92HEyf6gSitb7M4
+      domain: limewire.com
+      path: /
+      secure: true
+      httpOnly: true
+      creation: 2025-02-20T13:27:14.419Z
+      hostOnly: true
+      lastAccessed: 2025-02-20T13:27:14.419Z
+    - id: 7c05c70d-85c6-4026-9a54-f06ccf7b36c3
+      key: __cacheId
+      domain: limewire.com
+      path: /
+      secure: false
+      httpOnly: false
+      creation: 2025-02-20T13:27:14.419Z
+      hostOnly: true
+      lastAccessed: 2025-02-20T13:27:14.419Z
+    - id: 1c2d3866-703c-4200-a0c3-c4c33d1fecd8
+      key: lmwr_client_id
+      domain: limewire.com
+      path: /
+      secure: true
+      httpOnly: false
+      creation: 2025-02-20T13:27:14.419Z
+      lastAccessed: 2025-02-20T13:27:14.419Z
+    - id: 4e667e3f-398c-46b6-8fe7-b0be6481f9ef
+      key: JSESSIONID
+      value: 7E2D6D8C0A65518FB1CD3F0E654264D9
+      domain: localhost
+      path: /
+      secure: false
+      httpOnly: true
+      creation: 2025-06-16T11:34:19.339Z
+      hostOnly: true
+      lastAccessed: 2025-06-16T15:19:26.712Z
+environments:
+  name: Base Environment
+  meta:
+    id: env_99d30891da4bdcebc63947a8fc17f076de878684
+    created: 1740056372618
+    modified: 1765225369802
+    isPrivate: false
+  data:
+    url: https://bestrepairegypt.com
+    token: eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiQWhtYWQiLCJlbWFpbCI6ImFAYi5jIiwic3ViIjoiYUBiLmMiLCJpYXQiOjE3NjUyMjQ1MTgsImV4cCI6MTc2NTMxMDkxOH0.eWvuSNnSENSVz6IHGtNPTGcuYSnCs3dfa4JqhetlTXo
+  subEnvironments:
+    - name: DigitalOcean
+      meta:
+        id: env_007b7a77414f43569fd47654c70d5334
+        created: 1765225326132
+        modified: 1765225369802
+        isPrivate: false
+        sortKey: 1765225326133
+      data:
+        url: https://bestrepairegypt.com
+        token: eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiQWhtYWQiLCJlbWFpbCI6ImFAYi5jIiwic3ViIjoiYUBiLmMiLCJpYXQiOjE3NjUyMjUzNjksImV4cCI6MTc2NTMxMTc2OX0.ho6B9o4TS99Hf-5PYZGYpxk25PnODOZo5FV8uUyY-wM
