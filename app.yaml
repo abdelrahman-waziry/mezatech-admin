@@ -1,0 +1,4 @@
+name: mezatech-dashboard
+owner: abdelrahman-waziry
+package: .
+kind: wasmer.io/App.v0
