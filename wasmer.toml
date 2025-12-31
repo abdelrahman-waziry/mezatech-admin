@@ -68,9 +68,3 @@ APP_FALLBACK_LOCALE = "en"
 # Best Repair API (set in Wasmer deployment settings)
 # BEST_REPAIR_API_EMAIL = "your-email"
 # BEST_REPAIR_API_PASSWORD = "your-password"
-
-[health-check]
-path = "/health"
-interval = "30s"
-timeout = "5s"
-unhealthy-threshold = 3
