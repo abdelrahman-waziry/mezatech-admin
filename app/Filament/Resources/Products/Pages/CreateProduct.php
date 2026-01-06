@@ -36,9 +36,9 @@ class CreateProduct extends CreateRecord
                 'form_data' => $data
             ]);
 
-            // Create new Product instance and save via API
-            $product = new \App\Models\Product($data);
-            $product->save();
+            // Create new Product via API directly
+            $service = new \App\Services\ExternalProductService();
+            $result = $service->createProduct($data);
 
             Notification::make()
                 ->success()

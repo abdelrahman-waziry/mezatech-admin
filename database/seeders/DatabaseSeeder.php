@@ -22,6 +22,9 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        $this->call(TradeInJourneySeeder::class);
+        $this->call([
+            ShieldSeeder::class,
+            TradeInJourneySeeder::class,
+        ]);
     }
 }

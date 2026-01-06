@@ -87,9 +87,12 @@ class EditProduct extends EditRecord
                 'form_data' => $data
             ]);
 
-            // Update via API
-            $this->record->fill($data);
-            $this->record->save();
+            // Update via API directly
+            $service = new \App\Services\ExternalProductService();
+            $service->updateProduct((string) $this->record->id, $data);
+
+            // Update the local record instance to reflect changes in UI (if needed before redirect/refresh)
+            // $this->record->forceFill($data);
 
             Notification::make()
                 ->success()

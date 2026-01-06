@@ -23,7 +23,6 @@ class ProductForm
                 TextInput::make('sku')
                     ->label('SKU')
                     ->required()
-                    ->unique(ignoreRecord: true)
                     ->maxLength(100)
                     ->placeholder('e.g., IPH15-128GB')
                     ->helperText('Unique Stock Keeping Unit identifier'),

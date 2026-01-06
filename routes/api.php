@@ -34,4 +34,22 @@ Route::middleware('api')->prefix('v1')->group(function () {
 
     // Admin Routes
     Route::post('admin/login', [AdminController::class, 'login']);
+
+    // Analytics Ingestion Routes (Public)
+    Route::prefix('analytics')->group(function () {
+        Route::post('requests', [\App\Http\Controllers\Api\AnalyticsIngestionController::class, 'storeRequest']);
+        Route::post('events', [\App\Http\Controllers\Api\AnalyticsIngestionController::class, 'storeEvent']);
+    });
+
+    // Analytics Admin Routes (Protected)
+    Route::middleware('auth:sanctum')->prefix('admin/analytics')->group(function () {
+        Route::get('performance', [\App\Http\Controllers\Api\Admin\AnalyticsQueryController::class, 'performance']);
+        Route::get('traffic', [\App\Http\Controllers\Api\Admin\AnalyticsQueryController::class, 'traffic']);
+        Route::get('endpoints/top', [\App\Http\Controllers\Api\Admin\AnalyticsQueryController::class, 'topEndpoints']);
+        Route::get('tradeins/summary', [\App\Http\Controllers\Api\Admin\AnalyticsQueryController::class, 'tradeinsSummary']);
+        Route::get('tradeins/demand', [\App\Http\Controllers\Api\Admin\AnalyticsQueryController::class, 'tradeinsDemand']);
+        Route::get('tradeins/conditions', [\App\Http\Controllers\Api\Admin\AnalyticsQueryController::class, 'tradeinsConditions']);
+        Route::get('geography', [\App\Http\Controllers\Api\Admin\AnalyticsQueryController::class, 'geography']);
+        Route::get('devices', [\App\Http\Controllers\Api\Admin\AnalyticsQueryController::class, 'devices']);
+    });
 });

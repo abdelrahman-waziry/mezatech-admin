@@ -10,3 +10,7 @@ Route::get('/', function () {
 Route::get('/health', function () {
     return response()->json(['status' => 'healthy'], 200);
 });
+
+Route::get('/docs', function () {
+    return view('swagger');
+});

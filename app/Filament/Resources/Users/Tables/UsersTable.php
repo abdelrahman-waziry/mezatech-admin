@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
-use Filament\Actions\Action;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables;
 use Filament\Tables\Table;
 use App\Filament\Resources\Users\UserResource;
@@ -23,14 +23,15 @@ class UsersTable
                     ->searchable(),
                 Tables\Columns\TextColumn::make('phone_number')
                     ->label('Phone')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('roles.name')
+                    ->badge()
+                    ->label('Roles'),
             ])
             ->filters([])
             ->recordActions([
-                Action::make('edit')
-                    ->label('Edit')
-                    ->icon('heroicon-o-pencil')
-                    ->url(fn ($record) => UserResource::getUrl('edit', ['record' => $record->id])),
+                EditAction::make(),
             ])
             ->toolbarActions([]);
     }
