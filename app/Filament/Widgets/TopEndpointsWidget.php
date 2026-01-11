@@ -33,6 +33,8 @@ class TopEndpointsWidget extends BaseWidget
                 Tables\Columns\TextColumn::make('avg_duration')
                     ->label('Avg Duration (ms)')
                     ->numeric(decimalPlaces: 2),
-            ]);
+            ])
+            ->paginated(false)
+            ->recordKey('endpoint');
     }
 }

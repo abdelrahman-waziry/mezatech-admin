@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             ShieldSeeder::class,
+            UserRoleSeeder::class,
             TradeInJourneySeeder::class,
         ]);
     }

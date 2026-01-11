@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
-use Filament\Tables\Actions\EditAction;
+use Filament\Actions\EditAction;
 use Filament\Tables;
 use Filament\Tables\Table;
 use App\Filament\Resources\Users\UserResource;
@@ -30,7 +30,7 @@ class UsersTable
                     ->label('Roles'),
             ])
             ->filters([])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
             ])
             ->toolbarActions([]);

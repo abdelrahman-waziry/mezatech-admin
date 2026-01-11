@@ -1,15 +1,24 @@
 #!/bin/bash
 set -e
 
-echo "Starting Laravel application..."
+echo "Starting deployment entrypoint..."
 
-# Only cache if APP_KEY is set
-if [ -n "$APP_KEY" ]; then
-    echo "Caching configuration..."
-    php artisan config:cache || true
-    php artisan route:cache || true
-    php artisan view:cache || true
+# Wait for database if needed (optional, basic check)
+# sleep 5
+
+# Cache configuration
+if [ "$APP_ENV" == "production" ]; then
+    echo "Caching configuration for production..."
+    php artisan config:cache
+    php artisan event:cache
+    php artisan route:cache
+    php artisan view:cache
 fi
 
+# Run migrations
+echo "Running database migrations..."
+php artisan migrate --force
+
 # Start Apache
+echo "Starting Apache..."
 exec apache2-foreground

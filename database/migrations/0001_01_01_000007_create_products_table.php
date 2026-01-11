@@ -11,18 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('products', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('sku')->unique();
-            $table->text('description')->nullable();
-            $table->integer('condition')->default(0);
-            $table->text('notes')->nullable();
-            $table->decimal('minimum_buying_price', 12, 2);
-            $table->decimal('waste_price', 12, 2);
-            $table->foreignId('brand_id')->nullable()->constrained('brands')->onDelete('set null');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('products')) {
+            Schema::create('products', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('sku')->unique();
+                $table->text('description')->nullable();
+                $table->integer('condition')->default(0);
+                $table->text('notes')->nullable();
+                $table->decimal('minimum_buying_price', 12, 2);
+                $table->decimal('waste_price', 12, 2);
+                $table->foreignId('brand_id')->nullable()->constrained('brands')->onDelete('set null');
+                $table->timestamps();
+            });
+        }
     }
 
     /**
