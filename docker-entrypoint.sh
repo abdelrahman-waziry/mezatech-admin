@@ -5,10 +5,10 @@ echo "Starting deployment entrypoint..."
 
 # Wait for database to be ready
 echo "Waiting for database connection..."
-max_tries=30
+max_tries=60
 count=0
 while [ $count -lt $max_tries ]; do
-    if php -r "try { new PDO('mysql:host='.getenv('DB_HOST').';port='.getenv('DB_PORT'), getenv('DB_USERNAME'), getenv('DB_PASSWORD')); echo 'Connected'; exit(0); } catch(Exception \$e) { exit(1); }" > /dev/null 2>&1; then
+    if php -r "try { new PDO('mysql:host='.getenv('DB_HOST').';port='.getenv('DB_PORT'), getenv('DB_USERNAME'), getenv('DB_PASSWORD')); echo 'Connected'; exit(0); } catch(Exception \$e) { echo 'Connection failed: ' . \$e->getMessage() . PHP_EOL; exit(1); }" > /dev/null 2>&1; then
         echo "Database connection established."
         break
     fi
@@ -23,13 +23,13 @@ if [ $count -ge $max_tries ]; then
 fi
 
 # Cache configuration
-if [ "$APP_ENV" == "production" ]; then
-    echo "Caching configuration for production..."
-    php artisan config:cache
-    php artisan event:cache
-    php artisan route:cache
-    php artisan view:cache
-fi
+# if [ "$APP_ENV" == "production" ]; then
+#     echo "Caching configuration for production..."
+#    php artisan config:cache || true
+#    php artisan event:cache || true
+#    php artisan route:cache || true
+#    php artisan view:cache || true
+# fi
 
 # Run migrations
 echo "Running database migrations..."
