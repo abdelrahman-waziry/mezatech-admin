@@ -61,6 +61,9 @@ COPY --from=frontend /app/public/build public/build
 # Copy manifest if it exists (Vite 5+)
 
 
+# Configure git to allow operations in the directory
+RUN git config --global --add safe.directory /var/www/html
+
 # Install PHP dependencies
 RUN composer install \
     --no-dev \
