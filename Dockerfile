@@ -66,11 +66,11 @@ RUN git config --global --add safe.directory /var/www/html
 
 # Install PHP dependencies
 RUN composer update \
-    && composer install \
     --no-dev \
     --optimize-autoloader \
     --no-interaction \
-    --prefer-dist
+    --prefer-dist \
+    --no-scripts
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
