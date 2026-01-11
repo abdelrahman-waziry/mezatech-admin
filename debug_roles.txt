@@ -1,0 +1,38 @@
+---------------------------
+ID: 4
+Name: superadmin
+Email: admin@test.com
+Roles: [super_admin]
+Is Super Admin Rule Match: YES
+---------------------------
+ID: 5
+Name: Test User
+Email: test@example.com
+Roles: []
+Is Super Admin Rule Match: NO
+---------------------------
+ID: 7
+Name: Super Admin
+Email: admin@mezatech.com
+Roles: [super_admin]
+Is Super Admin Rule Match: YES
+---------------------------
+ID: 8
+Name: Editor User
+Email: editor@mezatech.com
+Roles: [editor]
+Is Super Admin Rule Match: NO
+---------------------------
+ID: 9
+Name: Analyst User
+Email: analyst@mezatech.com
+Roles: [analyst]
+Is Super Admin Rule Match: NO
+---------------------------
+ID: 10
+Name: Viewer User
+Email: viewer@mezatech.com
+Roles: [viewer]
+Is Super Admin Rule Match: NO
+---------------------------
+Config Super Admin Role Name: super_admin

@@ -44,3 +44,25 @@ Welcome to the MezaTech dashboard. This guide covers the basic workflows that ad
 - Backend/API: [Your primary backend contact/email]
 - Filament UI: [Filament support or maintainer]
 
+## Roles & Permissions
+
+The dashboard implements a Role-Based Access Control (RBAC) system using Filament Shield.
+
+### Role Definitions
+
+| Role | Description | Access Level |
+| :--- | :--- | :--- |
+| **Super Admin** | Full System Access | Can view, create, update, and delete EVERYTHING. Includes User & Role management. |
+| **Editor** | Business Manager | Can view, create, update, and delete all Business Resources (Products, Brands, etc.). **No access** to Users, Roles, or Permissions. |
+| **Analyst** | Data Specialist | Can view all Business Resources and Analytics Data. **Read-only** access. |
+| **Viewer** | Standard User | Can view all Business Resources. **Read-only** access. **No access** to Analytics. |
+
+### Default Users (Development)
+
+| Role | Email | Password |
+| :--- | :--- | :--- |
+| Super Admin | `admin@mezatech.com` | `password` |
+| Editor | `editor@mezatech.com` | `password` |
+| Analyst | `analyst@mezatech.com` | `password` |
+| Viewer | `viewer@mezatech.com` | `password` |
+

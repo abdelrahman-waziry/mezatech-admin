@@ -7,7 +7,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Final Application Image
-FROM php:8.2-apache
+FROM php:8.3-apache
 
 # Environment variables
 ENV COMPOSER_MEMORY_LIMIT=-1 \
