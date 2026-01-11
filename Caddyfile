@@ -1,0 +1,7 @@
+{
+    email admin@mezatech.com
+}
+
+{$DOMAIN_NAME} {
+    reverse_proxy app:80
+}
