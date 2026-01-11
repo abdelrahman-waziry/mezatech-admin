@@ -65,7 +65,8 @@ COPY --from=frontend /app/public/build public/build
 RUN git config --global --add safe.directory /var/www/html
 
 # Install PHP dependencies
-RUN composer install \
+RUN composer update \
+    && composer install \
     --no-dev \
     --optimize-autoloader \
     --no-interaction \
