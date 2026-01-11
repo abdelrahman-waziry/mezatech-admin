@@ -30,16 +30,16 @@ RUN apt-get update && apt-get install -y \
     mariadb-client \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install \
-        pdo \
-        pdo_mysql \
-        pdo_pgsql \
-        zip \
-        mbstring \
-        exif \
-        pcntl \
-        bcmath \
-        intl \
-        gd \
+    pdo \
+    pdo_mysql \
+    pdo_pgsql \
+    zip \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath \
+    intl \
+    gd \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -59,7 +59,7 @@ COPY . .
 # Copy built frontend assets
 COPY --from=frontend /app/public/build public/build
 # Copy manifest if it exists (Vite 5+)
-COPY --from=frontend /app/public/build/manifest.json public/build/manifest.json || true
+
 
 # Install PHP dependencies
 RUN composer install \
