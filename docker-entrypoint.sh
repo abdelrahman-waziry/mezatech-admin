@@ -33,7 +33,7 @@ fi
 
 # Run migrations
 echo "Running database migrations..."
-php artisan migrate --force
+APP_URL=http://localhost php artisan migrate --force
 
 # Start Apache
 echo "Starting Apache..."
