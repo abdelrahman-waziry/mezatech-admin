@@ -22,6 +22,12 @@ if [ $count -ge $max_tries ]; then
     exit 1
 fi
 
+# Clear all caches (Important for TrustProxies/ForceHTTPS)
+echo "Clearing caches..."
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+
 # Cache configuration
 # if [ "$APP_ENV" == "production" ]; then
 #     echo "Caching configuration for production..."
