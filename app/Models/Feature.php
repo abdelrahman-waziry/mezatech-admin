@@ -14,6 +14,8 @@ class Feature extends Model
     use Sushi;
 
     protected $table = 'features';
+    // Static cache for request-scoped caching
+    protected static array $requestCache = [];
 
     protected $fillable = [
         'id',
@@ -36,8 +38,12 @@ class Feature extends Model
 
     public function getRows(): array
     {
-        return \Illuminate\Support\Facades\Cache::remember('features_data', 300, function () {
-            try {
+        // Smart Caching: Request-scoped cache
+        if (isset(static::$requestCache['features_data'])) {
+             return static::$requestCache['features_data'];
+        }
+
+        try {
                 $token = app(ApiTokenService::class)->getToken();
                 $response = Http::withHeaders([
                     'Authorization' => 'Bearer ' . $token,
@@ -65,25 +71,29 @@ class Feature extends Model
                     return [];
                 }
 
-                return collect($features)->map(function ($feature) {
-                    // Format values as summary string for display
-                    $valuesSummary = '';
-                    if (isset($feature['values']) && is_array($feature['values'])) {
-                        $valuesSummary = collect($feature['values'])->pluck('value')->implode(', ');
-                    }
 
-                    return [
-                        'id' => $feature['id'] ?? null,
-                        'name' => $feature['name'] ?? 'Unnamed',
-                        'product_id' => $feature['productId'] ?? $feature['product_id'] ?? null,
-                        'values_summary' => $valuesSummary,
-                    ];
-                })->filter(fn ($row) => $row['id'] !== null)->all();
-            } catch (\Exception $e) {
-                Log::error('Failed to fetch features from API', ['error' => $e->getMessage()]);
-                return [];
-            }
-        });
+
+            $rows = collect($features)->map(function ($feature) {
+                // Format values as summary string for display
+                $valuesSummary = '';
+                if (isset($feature['values']) && is_array($feature['values'])) {
+                    $valuesSummary = collect($feature['values'])->pluck('value')->implode(', ');
+                }
+
+                return [
+                    'id' => $feature['id'] ?? null,
+                    'name' => $feature['name'] ?? 'Unnamed',
+                    'product_id' => $feature['productId'] ?? $feature['product_id'] ?? null,
+                    'values_summary' => $valuesSummary,
+                ];
+            })->filter(fn ($row) => $row['id'] !== null)->all();
+            
+            static::$requestCache['features_data'] = $rows;
+            return $rows;
+        } catch (\Exception $e) {
+            Log::error('Failed to fetch features from API', ['error' => $e->getMessage()]);
+            return [];
+        }
     }
 
 

@@ -53,8 +53,20 @@ class VariantsTable
                     ->requiresConfirmation()
                     ->action(function ($record) {
                         try {
+                            $id = null;
+                            if (is_object($record)) {
+                                $id = $record->id;
+                            } elseif (is_array($record)) {
+                                $id = $record['id'] ?? null;
+                            }
+
+                            if (!$id) {
+                                // If record is null (Sushi hydration failed?), we can't delete
+                                throw new \Exception("Cannot delete: Record not found (ID missing).");
+                            }
+
                             $service = new \App\Services\VariantService();
-                            $service->delete((string) $record['id']);
+                            $service->delete((string) $id);
 
                             \Filament\Notifications\Notification::make()
                                 ->success()

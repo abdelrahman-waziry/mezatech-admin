@@ -59,6 +59,12 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
+            ])
+            ->navigationGroups([
+                'Trade-in',
+                'Pricing Management',
+                'Analytics',
+                'Filament Shield',
             ]);
     }
 }

@@ -22,7 +22,7 @@ class TradeInRequestResource extends Resource
     protected static ?string $navigationLabel = 'Trade-in requests';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
-    protected static string|UnitEnum|null $navigationGroup = 'Activity Logs';
+    protected static string|UnitEnum|null $navigationGroup = 'Trade-in';
 
     public static function form(Schema $schema): Schema
     {

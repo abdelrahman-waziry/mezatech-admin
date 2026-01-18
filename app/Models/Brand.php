@@ -14,6 +14,9 @@ class Brand extends Model
 
     protected $table = 'brands';
 
+    // Static cache for request-scoped caching
+    protected static array $requestCache = [];
+
     protected $fillable = [
         'id',
         'name',
@@ -35,8 +38,12 @@ class Brand extends Model
      */
     public function getRows(): array
     {
-        return \Illuminate\Support\Facades\Cache::remember('brands_data', 300, function () {
-            try {
+        // Smart Caching: Request-scoped cache
+        if (isset(static::$requestCache['brands_data'])) {
+             return static::$requestCache['brands_data'];
+        }
+
+        try {
                 $token = app(ApiTokenService::class)->getToken();
                 $response = Http::withHeaders([
                     'Authorization' => 'Bearer ' . $token,
@@ -80,12 +87,13 @@ class Brand extends Model
 
             Log::info('Total brands mapped: ' . count($rows));
 
+            static::$requestCache['brands_data'] = $rows;
+
             return $rows;
         } catch (\Exception $e) {
             Log::error('Failed to fetch brands from API', ['error' => $e->getMessage()]);
             return [];
         }
-        });
     }
 
     public function getIncrementing()

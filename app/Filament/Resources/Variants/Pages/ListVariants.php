@@ -15,6 +15,14 @@ class ListVariants extends ListRecords
 {
     protected static string $resource = VariantResource::class;
 
+    public function boot(): void
+    {
+        $productId = $this->resolveProductFilterId();
+        if ($productId) {
+            Variant::$currentProductId = (int) $productId;
+        }
+    }
+
     protected function getHeaderActions(): array
     {
         return [

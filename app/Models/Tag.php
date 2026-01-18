@@ -14,6 +14,8 @@ class Tag extends Model
     use Sushi;
 
     protected $table = 'tags';
+    // Static cache for request-scoped caching
+    protected static array $requestCache = [];
 
     protected $fillable = [
         'id',
@@ -31,8 +33,12 @@ class Tag extends Model
 
     public function getRows(): array
     {
-        return \Illuminate\Support\Facades\Cache::remember('tags_data', 300, function () {
-            try {
+        // Smart Caching: Request-scoped cache
+        if (isset(static::$requestCache['tags_data'])) {
+             return static::$requestCache['tags_data'];
+        }
+        
+        try {
                 $token = app(ApiTokenService::class)->getToken();
                 $response = Http::withHeaders([
                     'Authorization' => 'Bearer ' . $token,
@@ -59,17 +65,19 @@ class Tag extends Model
                 return [];
             }
 
-            return collect($tags)->map(function ($tag) {
+            $rows = collect($tags)->map(function ($tag) {
                 return [
                     'id' => $tag['id'] ?? null,
                     'name' => $tag['name'] ?? 'Unnamed',
                 ];
             })->filter(fn ($row) => $row['id'] !== null)->all();
+            
+            static::$requestCache['tags_data'] = $rows;
+            return $rows;
         } catch (\Exception $e) {
             Log::error('Failed to fetch tags from API', ['error' => $e->getMessage()]);
             return [];
         }
-        });
     }
 
 

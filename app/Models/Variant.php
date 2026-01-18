@@ -21,6 +21,9 @@ class Variant extends Model
      * This is set by ListVariants before querying
      */
     public static ?int $currentProductId = null;
+    
+    // Static cache for request-scoped caching
+    protected static array $requestCache = [];
 
     /**
      * Get the product ID filter - check static property first, then request
@@ -105,9 +108,15 @@ class Variant extends Model
             }
 
             $cacheKey = "variants_data_product_{$productId}";
-            return \Illuminate\Support\Facades\Cache::remember($cacheKey, 300, function () use ($productId) {
-                // Fetch variants for the selected product only
-                $token = app(ApiTokenService::class)->getToken();
+            
+            // Smart Caching: Use static property to cache within the request only
+            // This ensures fresh data on new requests (like after redirect) but avoids duplicate calls in same request
+            if (isset(static::$requestCache[$cacheKey])) {
+                return static::$requestCache[$cacheKey];
+            }
+            
+            // Fetch variants for the selected product only
+            $token = app(ApiTokenService::class)->getToken();
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
                 'Accept' => 'application/json',
@@ -179,14 +188,19 @@ class Variant extends Model
                 ];
             }
 
+
             Log::info('Variants mapped successfully', [
                 'mapped_count' => count($allVariants),
                 'original_count' => count($variants),
                 'productId' => $productId
             ]);
 
-                return array_filter($allVariants, fn ($row) => $row['id'] !== null);
-            });
+            $result = array_filter($allVariants, fn ($row) => $row['id'] !== null);
+            
+            // Store in static cache
+            static::$requestCache[$cacheKey] = $result;
+            
+            return $result;
         } catch (\Exception $e) {
             Log::error('Failed to fetch variants from API', ['error' => $e->getMessage()]);
             return [];
@@ -308,6 +322,7 @@ class Variant extends Model
         try {
             $service = new VariantService();
             $service->delete((string) $this->id);
+            
 
             Log::info('Variant deleted via API', ['id' => $this->id]);
             return true;

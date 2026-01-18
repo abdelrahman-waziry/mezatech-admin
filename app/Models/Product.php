@@ -15,6 +15,9 @@ class Product extends Model
 
     protected $table = 'products';
     
+    // Static cache for request-scoped caching
+    protected static array $requestCache = [];
+    
     protected $fillable = [
         'id',
         'name',
@@ -53,9 +56,16 @@ class Product extends Model
     public function getRows(): array
     {
         Log::info('Product::getRows called - checking cache');
-        return \Illuminate\Support\Facades\Cache::remember('products_data', 300, function () { // Cache for 5 minutes
-            Log::info('Product cache miss - fetching from API');
-            try {
+        Log::info('Product::getRows called - checking cache');
+        
+        // Smart Caching: Request-scoped cache
+        if (isset(static::$requestCache['products_data'])) {
+             Log::info('Product cache hit (request-scoped)');
+             return static::$requestCache['products_data'];
+        }
+
+        Log::info('Product cache miss - fetching from API');
+        try {
                 // Fetch API
                 $token = app(ApiTokenService::class)->getToken();
                 $response = Http::withHeaders([
@@ -122,13 +132,14 @@ class Product extends Model
             })->filter(fn ($row) => $row['id'] !== null)->all();
 
             Log::info('Total products mapped: ' . count($rows));
+            
+            static::$requestCache['products_data'] = $rows;
 
-                return $rows;
-            } catch (\Exception $e) {
-                Log::error('Failed to fetch products from API', ['error' => $e->getMessage()]);
-                return [];
-            }
-        });
+            return $rows;
+        } catch (\Exception $e) {
+            Log::error('Failed to fetch products from API', ['error' => $e->getMessage()]);
+            return [];
+        }
     }
 
     protected function formatFeatures(array $features): string
