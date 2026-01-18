@@ -19,8 +19,9 @@ class FeatureResource extends Resource
 {
     protected static ?string $model = Feature::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-sparkles';
     protected static string|UnitEnum|null $navigationGroup = "Pricing Management";
+    protected static ?int $navigationSort = 3;
 
     public static function form(Schema $schema): Schema
     {

@@ -3,7 +3,7 @@ info:
   title: Mezatech Backend API
   version: 1.0.0
 servers:
-  - url: http://localhost:8080
+  - url: https://mezatech-dashboard.test/api
 tags:
   - name: Products
     description: API operations related to products
@@ -137,6 +137,94 @@ paths:
       responses:
         '200':
           description: Demand metrics
+
+  /v1/trade-in-requests:
+    get:
+      tags:
+        - TradeInRequests
+      summary: Get all trade-in requests
+      operationId: getTradeInRequests
+      responses:
+        '200':
+          description: List of trade-in requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeInRequestsResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    post:
+      tags:
+        - TradeInRequests
+      summary: Create a new trade-in request
+      operationId: createTradeInRequest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTradeInRequestDTO'
+      responses:
+        '201':
+          description: Trade-in request created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /v1/trade-in-requests/{id}:
+    put:
+      tags:
+        - TradeInRequests
+      summary: Update a trade-in request
+      operationId: updateTradeInRequest
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTradeInRequestDTO'
+      responses:
+        '200':
+          description: Trade-in request updated
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    delete:
+      tags:
+        - TradeInRequests
+      summary: Delete a trade-in request
+      operationId: deleteTradeInRequest
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Trade-in request deleted
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
 
   /v1/products:
     get:
@@ -1652,3 +1740,76 @@ components:
               type: string
             os_version:
               type: string
+    TradeInRequestDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        variantId:
+          type: integer
+          format: int64
+        tradeInQuote:
+          type: number
+        customerName:
+          type: string
+        customerEmail:
+          type: string
+        customerPhone:
+          type: string
+        status:
+          type: string
+          enum: [pending, rejected, accepted]
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateTradeInRequestDTO:
+      type: object
+      properties:
+        variantId:
+          type: integer
+          format: int64
+        tradeInQuote:
+          type: number
+        customerName:
+          type: string
+        customerEmail:
+          type: string
+        customerPhone:
+          type: string
+        status:
+          type: string
+          enum: [pending, rejected, accepted]
+      required:
+        - variantId
+        - tradeInQuote
+        - customerName
+        - customerPhone
+        - status
+
+    UpdateTradeInRequestDTO:
+      type: object
+      properties:
+        variantId:
+          type: integer
+          format: int64
+        tradeInQuote:
+          type: number
+        customerName:
+          type: string
+        customerEmail:
+          type: string
+        customerPhone:
+          type: string
+        status:
+          type: string
+          enum: [pending, rejected, accepted]
+
+    TradeInRequestsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/TradeInRequestDTO'

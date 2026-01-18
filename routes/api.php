@@ -41,6 +41,9 @@ Route::middleware('api')->prefix('v1')->group(function () {
         Route::post('events', [\App\Http\Controllers\Api\AnalyticsIngestionController::class, 'storeEvent']);
     });
 
+    // Trade-in Request Routes
+    Route::apiResource('trade-in-requests', \App\Http\Controllers\TradeInRequestController::class);
+
     // Analytics Admin Routes (Protected)
     Route::middleware('auth:sanctum')->prefix('admin/analytics')->group(function () {
         Route::get('performance', [\App\Http\Controllers\Api\Admin\AnalyticsQueryController::class, 'performance']);
