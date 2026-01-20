@@ -24,5 +24,17 @@ class AppServiceProvider extends ServiceProvider
         if (app()->environment('production')) {
             URL::forceScheme('https');
         }
+
+        \Illuminate\Support\Facades\Mail::extend('brevo', function (array $config = []) {
+            $transportFactory = new \Symfony\Component\Mailer\Bridge\Brevo\Transport\BrevoTransportFactory();
+            
+            return $transportFactory->create(
+                new \Symfony\Component\Mailer\Transport\Dsn(
+                    'brevo+api',
+                    'default',
+                    config('services.brevo.key')
+                )
+            );
+        });
     }
 }
