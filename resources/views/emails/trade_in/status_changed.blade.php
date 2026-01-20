@@ -86,26 +86,6 @@ a[x-apple-data-detectors],
    <table width="100%" cellspacing="0" cellpadding="0" class="es-wrapper" role="none" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-spacing:0px;padding:0;Margin:0;width:100%;height:100%;background-repeat:repeat;background-position:center top;background-color:#FAFAFA">
      <tr>
       <td valign="top" style="padding:0;Margin:0">
-       <table cellpadding="0" cellspacing="0" align="center" class="es-header" role="none" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-spacing:0px;width:100%;table-layout:fixed !important;background-color:transparent;background-repeat:repeat;background-position:center top">
-         <tr>
-          <td align="center" bgcolor="#333333" style="padding:0;Margin:0;background-color:#333333">
-           <table bgcolor="#ffffff" align="center" cellpadding="0" cellspacing="0" class="es-header-body" role="none" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-spacing:0px;background-color:transparent;width:600px">
-             <tr>
-              <td align="left" style="padding:20px;Margin:0">
-               <table cellpadding="0" cellspacing="0" width="100%" role="none" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-spacing:0px">
-                 <tr>
-                  <td valign="top" align="center" class="es-m-p0r" style="padding:0;Margin:0;width:560px">
-                   <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-spacing:0px">
-                     <tr>
-                      <td align="center" style="padding:0;Margin:0;padding-bottom:10px;font-size:0px"><img src="https://eaeymkj.stripocdn.email/content/guids/CABINET_9634381b3ca6cbe8a1d5eaaa6588f57f4a4f7f02ee67f2320391b15dd80e4c40/images/68d5073ad8915b78375a0937_logo_meza_tech.png" alt="MezaTech Logo" width="133" title="Logo" style="display:block;font-size:12px;border:0;outline:none;text-decoration:none;margin:0"></td>
-                     </tr>
-                   </table></td>
-                 </tr>
-               </table></td>
-             </tr>
-           </table></td>
-         </tr>
-       </table>
        <table cellpadding="0" cellspacing="0" align="center" class="es-content" role="none" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-spacing:0px;width:100%;table-layout:fixed !important">
          <tr>
           <td align="center" style="padding:0;Margin:0">
@@ -139,14 +119,158 @@ a[x-apple-data-detectors],
                  <tr>
                   <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
                    <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-spacing:0px">
+                     
+                     @if($tradeInRequest->status === 'accepted')
+                     <!-- ACCEPTED STATUS CONTENT -->
                      <tr>
-                      <td align="center" style="padding:0;Margin:0"><h2 class="es-m-txt-c" style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:26px;font-style:normal;font-weight:bold;line-height:31.2px;color:#333333">Your Trade-in Request&nbsp;is <span style="color: {{ match($tradeInRequest->status) { 'accepted' => '#28a745', 'rejected' => '#dc3545', default => '#5C68E2' } }}">{{ ucfirst($tradeInRequest->status) }}</span>!&nbsp;</h2></td>
+                      <td align="center" style="padding:0;Margin:0;padding-bottom:10px"><h2 class="es-m-txt-c" style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:28px;font-style:normal;font-weight:bold;line-height:33.6px;color:#28a745">Great news! 🎉</h2></td>
                      </tr>
-                    @if($tradeInRequest->admin_comment)
                      <tr>
-                      <td align="center" style="padding:15px;Margin:0"><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:24px;letter-spacing:0;color:#555555;font-size:16px;background-color:#F7F7F7;padding:10px;border-left:4px solid #5C68E2;">{{ $tradeInRequest->admin_comment }}</p></td>
+                      <td align="center" style="padding:0;Margin:0;padding-bottom:20px"><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:24px;letter-spacing:0;color:#333333;font-size:16px">Your device qualifies for trade-in.</p></td>
                      </tr>
-                    @endif
+                     <tr>
+                      <td align="center" style="padding:0;Margin:0;padding-bottom:5px"><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#888888;font-size:14px;text-transform:uppercase">Estimated Trade-In Value</p></td>
+                     </tr>
+                     <tr>
+                      <td align="center" style="padding:0;Margin:0;padding-bottom:30px"><h1 style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:42px;font-style:normal;font-weight:bold;line-height:50.4px;color:#28a745">{{ number_format($tradeInRequest->trade_in_quote, 0) }} EGP</h1></td>
+                     </tr>
+                     
+                     <!-- What Happens Next -->
+                     <tr>
+                      <td align="left" style="padding:0;Margin:0;padding-bottom:20px;border-bottom:1px solid #eeeeee"><h3 style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:20px;font-style:normal;font-weight:bold;line-height:24px;color:#333333">What Happens Next</h3></td>
+                     </tr>
+                     
+                     <!-- Step 1: Confirm -->
+                     <tr>
+                      <td align="left" style="padding:15px 0;Margin:0;border-bottom:1px solid #eeeeee">
+                        <h4 style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:16px;font-style:normal;font-weight:bold;line-height:19.2px;color:#333333">1. Confirm the Offer</h4>
+                        <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#666666;font-size:14px;margin-top:5px">Click the button below to accept the trade-in offer.</p>
+                      </td>
+                     </tr>
+                     
+                     <!-- Confirm Button -->
+                     <tr>
+                      <td align="center" style="padding:25px 0;Margin:0">
+                        <span class="es-button-border" style="border-style:solid;border-color:#28a745;background:#28a745;border-width:0px;display:inline-block;border-radius:6px;width:auto">
+                          <a href="{{ config('app.url') }}" class="es-button" target="_blank" style="mso-style-priority:100 !important;text-decoration:none;mso-line-height-rule:exactly;color:#FFFFFF;font-size:18px;border-style:solid;border-color:#28a745;border-width:12px 30px;display:inline-block;background:#28a745;border-radius:6px;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-weight:bold;font-style:normal;line-height:21.6px;width:auto;text-align:center">Confirm Offer</a>
+                        </span>
+                      </td>
+                     </tr>
+                     
+                     <!-- Step 2: Prepare -->
+                     <tr>
+                      <td align="left" style="padding:15px 0;Margin:0;border-bottom:1px solid #eeeeee">
+                        <h4 style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:16px;font-style:normal;font-weight:bold;line-height:19.2px;color:#333333">2. Prepare Your Device</h4>
+                        <ul style="Margin:10px 0 0 0;padding-left:20px;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:24px;color:#666666;font-size:14px">
+                            <li>Back up your data</li>
+                            <li>Remove SIM cards</li>
+                            <li>Turn off Find My iPhone / device locks</li>
+                            <li>Do not reset the device yet</li>
+                        </ul>
+                      </td>
+                     </tr>
+
+                     <!-- Step 3: Drop Off -->
+                     <tr>
+                      <td align="left" style="padding:15px 0;Margin:0;border-bottom:1px solid #eeeeee">
+                        <h4 style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:16px;font-style:normal;font-weight:bold;line-height:19.2px;color:#333333">3. Drop Off or Pickup</h4>
+                        <ul style="Margin:10px 0 0 0;padding-left:20px;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:24px;color:#666666;font-size:14px">
+                            <li>Visit any Black Mint location</li>
+                            <li>Or schedule a convenient pickup</li>
+                        </ul>
+                      </td>
+                     </tr>
+
+                     <!-- Step 4: Inspection -->
+                     <tr>
+                      <td align="left" style="padding:15px 0;Margin:0;border-bottom:1px solid #eeeeee">
+                        <h4 style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:16px;font-style:normal;font-weight:bold;line-height:19.2px;color:#333333">4. Final Inspection</h4>
+                        <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#666666;font-size:14px;margin-top:5px">Our experts will verify the device condition.</p>
+                      </td>
+                     </tr>
+
+                     <!-- Step 5: Get Paid -->
+                     <tr>
+                      <td align="left" style="padding:15px 0;Margin:0;padding-bottom:30px">
+                        <h4 style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:16px;font-style:normal;font-weight:bold;line-height:19.2px;color:#333333">5. Get Paid</h4>
+                        <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#666666;font-size:14px;margin-top:5px">Receive payment as agreed or exchange a Minted device.</p>
+                      </td>
+                     </tr>
+
+                     <!-- Terms & Conditions -->
+                     <tr>
+                      <td align="left" style="padding:20px;Margin:0;background-color:#f8f9fa;border-radius:8px">
+                        <h5 style="Margin:0 0 15px 0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:14px;font-style:normal;font-weight:bold;line-height:16.8px;color:#333333">Trade-In Terms & Conditions</h5>
+                        <p style="Margin:0 0 10px 0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:18px;letter-spacing:0;color:#666666;font-size:12px">To keep everything transparent and fair, please note the following:</p>
+                        <ul style="Margin:0;padding-left:18px;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:20px;color:#666666;font-size:12px">
+                            <li style="margin-bottom:5px">The quoted value is estimated based on the information you provided.</li>
+                            <li style="margin-bottom:5px">Final trade-in value is confirmed only after physical inspection of the device.</li>
+                            <li style="margin-bottom:5px">If the actual condition differs from what was submitted, the offer may be adjusted.</li>
+                            <li style="margin-bottom:5px">Devices must be fully functional and free of activation locks, passwords, or accounts.</li>
+                            <li style="margin-bottom:5px">Black Mint reserves the right to reject devices that are: reported lost or stolen, counterfeit or modified, damaged beyond repair.</li>
+                            <li style="margin-bottom:5px">Customers are responsible for backing up and removing all personal data.</li>
+                            <li style="margin-bottom:5px">Any accessories included are evaluated as part of the final offer.</li>
+                            <li style="margin-bottom:5px">If the revised offer is declined after inspection, the device can be returned to you.</li>
+                        </ul>
+                        <p style="Margin:15px 0 0 0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:18px;letter-spacing:0;color:#666666;font-size:12px;font-style:italic">By proceeding with the trade-in process, you agree to these terms.</p>
+                      </td>
+                     </tr>
+
+                     @elseif($tradeInRequest->status === 'rejected')
+                     <!-- REJECTED STATUS CONTENT -->
+                     <tr>
+                      <td align="center" style="padding:0;Margin:0;padding-bottom:20px"><h2 class="es-m-txt-c" style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:26px;font-style:normal;font-weight:bold;line-height:31.2px;color:#dc3545">We're Sorry</h2></td>
+                     </tr>
+                     <tr>
+                      <td align="left" style="padding:0;Margin:0;padding-bottom:20px"><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:24px;letter-spacing:0;color:#333333;font-size:16px">Thank you for sharing your device details with us.</p></td>
+                     </tr>
+                     <tr>
+                      <td align="left" style="padding:0;Margin:0;padding-bottom:20px"><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:24px;letter-spacing:0;color:#555555;font-size:15px">After reviewing the information provided, we're unable to accept this device for trade-in at this time. This may be due to one of the following:</p></td>
+                     </tr>
+                     <tr>
+                      <td align="left" style="padding:0;Margin:0;padding-bottom:25px">
+                        <ul style="Margin:0;padding-left:20px;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:26px;color:#666666;font-size:14px">
+                            <li>Condition outside our current acceptance criteria</li>
+                            <li>Unsupported model</li>
+                            <li>Incomplete or mismatched information</li>
+                            <li>Functional issues beyond trade-in eligibility</li>
+                        </ul>
+                      </td>
+                     </tr>
+                     
+                     <!-- What You Can Do Next -->
+                     <tr>
+                      <td align="left" style="padding:0;Margin:0;padding-bottom:15px;border-top:1px solid #eeeeee;padding-top:25px"><h3 style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:20px;font-style:normal;font-weight:bold;line-height:24px;color:#333333">What You Can Do Next</h3></td>
+                     </tr>
+                     <tr>
+                      <td align="left" style="padding:0;Margin:0;padding-bottom:20px"><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:24px;letter-spacing:0;color:#555555;font-size:15px">You're more than welcome to:</p></td>
+                     </tr>
+                     <tr>
+                      <td align="left" style="padding:0;Margin:0;padding-bottom:25px">
+                        <ul style="Margin:0;padding-left:20px;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:28px;color:#555555;font-size:14px">
+                            <li><strong>Call us at Black Mint:</strong> <a href="tel:+201009925253" style="color:#5C68E2;text-decoration:none">+201009925253</a></li>
+                            <li><strong>Ask about repair options instead at</strong> <a href="https://Fixtechegypt.com" target="_blank" style="color:#5C68E2;text-decoration:underline">Fixtechegypt.com</a></li>
+                            <li>Explore upgrading to a <strong>Minted device</strong></li>
+                            <li>Request a re-evaluation if anything was entered incorrectly</li>
+                        </ul>
+                      </td>
+                     </tr>
+                     <tr>
+                      <td align="left" style="padding:20px;Margin:0;background-color:#f8f9fa;border-radius:8px;border-left:4px solid #5C68E2"><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:24px;letter-spacing:0;color:#333333;font-size:15px;font-weight:500">We're here to help you find the best solution.</p></td>
+                     </tr>
+
+                     @else
+                     <!-- OTHER STATUS CONTENT (Pending, etc.) -->
+                     <tr>
+                      <td align="center" style="padding:0;Margin:0"><h2 class="es-m-txt-c" style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:26px;font-style:normal;font-weight:bold;line-height:31.2px;color:#333333">Your Trade-in Request&nbsp;is <span style="color:#5C68E2">{{ ucfirst($tradeInRequest->status) }}</span>!</h2></td>
+                     </tr>
+                     @if($tradeInRequest->admin_comment)
+                     <tr>
+                      <td align="center" style="padding:20px 0;Margin:0"><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:24px;letter-spacing:0;color:#555555;font-size:16px;background-color:#F7F7F7;padding:15px;border-left:4px solid #5C68E2;">{{ $tradeInRequest->admin_comment }}</p></td>
+                     </tr>
+                     @endif
+                     @endif
+
                    </table></td>
                  </tr>
                </table></td>
