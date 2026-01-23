@@ -65,20 +65,72 @@ class TradeInRequestsTable
                     ->sortable(),
             ])
             ->filters([])
-            ->recordActions([
-                \Filament\Actions\EditAction::make(),
-                \Filament\Actions\Action::make('view_comment')
-                    ->label('View Comment')
-                    ->icon('heroicon-o-chat-bubble-left-ellipsis')
-                    ->form([
-                        \Filament\Forms\Components\Textarea::make('admin_comment')
-                            ->label('Admin Comment')
-                            ->readOnly()
-                            ->rows(5),
-                    ])
-                    ->modalHeading('Admin Comment')
-                    ->modalSubmitAction(false)
-                    ->modalCancelAction(fn ($action) => $action->label('Close')),
+            ->actions([
+                \Filament\Actions\ActionGroup::make([
+                    \Filament\Actions\EditAction::make(),
+                    \Filament\Actions\Action::make('view_comment')
+                        ->label('View Comment')
+                        ->icon('heroicon-o-chat-bubble-left-ellipsis')
+                        ->form([
+                            \Filament\Forms\Components\Textarea::make('admin_comment')
+                                ->label('Admin Comment')
+                                ->default(fn ($record) => $record->admin_comment)
+                                ->readOnly()
+                                ->rows(5),
+                        ])
+                        ->modalHeading('Admin Comment')
+                        ->modalSubmitAction(false)
+                        ->modalCancelAction(fn ($action) => $action->label('Close')),
+                    \Filament\Actions\Action::make('download_report')
+                        ->label('Report')
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->action(function ($record) {
+                            return response()->streamDownload(function () use ($record) {
+                                $report = \App\Filament\Resources\TradeInRequests\Schemas\TradeInRequestForm::getReportContent($record);
+                                $csv = fopen('php://output', 'w');
+                                
+                                // BOM for Excel compatibility
+                                fputs($csv, "\xEF\xBB\xBF");
+
+                                // Headers
+                                fputcsv($csv, ['Category', 'Item', 'Value', 'Status/Impact']);
+
+                                // Customer Info
+                                fputcsv($csv, ['Customer Info', 'Name', $record->customer_name, '']);
+                                fputcsv($csv, ['Customer Info', 'Email', $record->customer_email, '']);
+                                fputcsv($csv, ['Customer Info', 'Phone', $record->customer_phone, '']);
+                                fputcsv($csv, ['Customer Info', 'Quote', $record->trade_in_quote, '']);
+                                fputcsv($csv, ['', '', '', '']);
+
+                                // Simplified Report
+                                if (!empty($report['simplified_report'])) {
+                                    foreach ($report['simplified_report'] as $item) {
+                                        fputcsv($csv, [
+                                            'Questionnaire',
+                                            $item['question'],
+                                            $item['answer'],
+                                            $item['is_flagged'] ? 'Flagged' : 'OK'
+                                        ]);
+                                    }
+                                    fputcsv($csv, ['', '', '', '']);
+                                }
+
+                                // Parts Report
+                                if (!empty($report['parts_report'])) {
+                                    foreach ($report['parts_report'] as $item) {
+                                        fputcsv($csv, [
+                                            'Part Check',
+                                            $item['part_name'],
+                                            $item['condition_name'],
+                                            $item['input_price_impact']
+                                        ]);
+                                    }
+                                }
+                                
+                                fclose($csv);
+                            }, 'trade-in-report-' . $record->id . '.csv');
+                        }),
+                ]),
             ])
             ->recordAction('view_comment')
             ->toolbarActions([]);
