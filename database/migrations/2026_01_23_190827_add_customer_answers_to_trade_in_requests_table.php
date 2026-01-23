@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('trade_in_requests', function (Blueprint $table) {
-            $table->json('customer_answers')->nullable()->after('selected_options');
+            $table->json('customer_answers')->nullable();
         });
     }
 
