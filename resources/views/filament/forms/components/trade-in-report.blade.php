@@ -310,13 +310,9 @@
                                 </span>
                             </td>
                             <td class="text-right font-mono text-sm">
-                                @if($isDefect)
-                                    <span class="impact-value impact-negative">
-                                        {{ $item['input_price_impact'] }}
-                                    </span>
-                                @else
-                                    <span class="impact-neutral">-</span>
-                                @endif
+                                <span class="impact-value impact-negative">
+                                    {{ $item['input_price_impact'] }}
+                                </span>
                             </td>
                         </tr>
                         @endforeach
