@@ -53,6 +53,52 @@ class Variant extends Model
         return $productId ? (int) $productId : null;
     }
 
+    /**
+     * FIXED: Bypass Sushi for Edit Page lookups.
+     * When editing a record (e.g. /variants/123/edit), there are no filters,
+     * so getRows() returns empty. This manually fetches the single record.
+     */
+    public function resolveRouteBinding($value, $field = null)
+    {
+        try {
+            $service = new VariantService();
+            // Fetch single variant by ID from API
+            $data = $service->fetchOne($value);
+
+            if (!$data) {
+                abort(404);
+            }
+
+            // Map API data to Model attributes (Same logic as getRows)
+            $productRef = $data['product'] ?? [];
+            
+            $attributes = [
+                'id' => $data['id'] ?? $value,
+                'name' => $data['name'] ?? 'Unnamed',
+                'buying_price' => (float) ($data['buyingPrice'] ?? $data['buying_price'] ?? 0),
+                'price_before_discount' => (float) ($data['priceBeforeDiscount'] ?? $data['price_before_discount'] ?? 0),
+                'discount' => (float) ($data['discount'] ?? 0),
+                'price_after_discount' => (float) ($data['priceAfterDiscount'] ?? $data['price_after_discount'] ?? 0),
+                'stock' => (int) ($data['stock'] ?? 0),
+                'product_id' => $productRef['id'] ?? $data['productId'] ?? null,
+                'product_name' => $productRef['name'] ?? 'Unknown Product',
+                'created_at' => $this->normalizeDate($data['createdAt'] ?? $data['created_at'] ?? now()),
+                'updated_at' => $this->normalizeDate($data['updatedAt'] ?? $data['updated_at'] ?? now()),
+            ];
+
+            // Create instance and mark as existing so Filament knows it's an Update
+            $variant = new static();
+            $variant->forceFill($attributes);
+            $variant->exists = true;
+
+            return $variant;
+
+        } catch (\Exception $e) {
+            Log::error('ResolveRouteBinding failed for Variant: ' . $e->getMessage());
+            abort(404);
+        }
+    }
+
     protected $fillable = [
         'id',
         'name',
