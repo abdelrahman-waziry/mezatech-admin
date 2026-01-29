@@ -3,9 +3,8 @@
 namespace App\Filament\Resources\Variants\Pages;
 
 use App\Filament\Resources\Variants\VariantResource;
-use App\Models\Variant; // Import the Model
+use App\Models\Variant;
 use App\Services\VariantService;
-use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
@@ -16,22 +15,21 @@ class EditVariant extends EditRecord
     protected static string $resource = VariantResource::class;
 
     /**
-     * NUCLEAR OPTION: Override how Filament finds the record.
-     * This bypasses the Database/Sushi entirely and fetches directly from API.
+     * 1. LOAD DATA: Fetch from API and force types to match Form
      */
     protected function resolveRecord($key): Model
     {
         try {
             $service = new VariantService();
-            // Fetch the raw data using the ID ($key) from the URL
             $data = $service->fetchOne($key);
 
             if (!$data) {
-                throw new \Exception("API returned empty data for ID: $key");
+                abort(404, "Variant not found in API");
             }
 
-            // Map API (camelCase) to Model (snake_case)
-            // We must manually fill the attributes needed for the form
+            // ROBUST ID FINDER: Check both nested object and flat key
+            $productId = $data['product']['id'] ?? $data['productId'] ?? null;
+
             $attributes = [
                 'id' => $data['id'],
                 'name' => $data['name'] ?? '',
@@ -40,88 +38,77 @@ class EditVariant extends EditRecord
                 'discount' => $data['discount'] ?? 0,
                 'price_after_discount' => $data['priceAfterDiscount'] ?? $data['price_after_discount'] ?? 0,
                 'stock' => $data['stock'] ?? 0,
-                'product_id' => $data['product']['id'] ?? $data['productId'] ?? null,
-                // Add product_name if you display it
+                
+                // CRITICAL FIX: Force Integer. 
+                // The Form options are Integers, so this MUST match exactly.
+                'product_id' => $productId ? (int)$productId : null,
+                
                 'product_name' => $data['product']['name'] ?? 'Unknown',
             ];
 
-            // Create a temporary Model instance
+            // Debug Log: Check this if it still fails
+            Log::info('EditVariant Loaded:', ['id' => $data['id'], 'product_id' => $attributes['product_id']]);
+
             $record = new Variant();
             $record->forceFill($attributes);
-            
-            // CRITICAL: Tell Filament this record "exists" so it treats this as an Edit page
             $record->exists = true; 
 
             return $record;
 
         } catch (\Exception $e) {
-            Log::error("EditVariant resolveRecord failed: " . $e->getMessage());
-            // If this fails, we want to see the error, not a generic 404
-            // throwing this exception will show a 500 error with the message
-            throw $e; 
+            Log::error("EditVariant Crash: " . $e->getMessage());
+            throw $e;
         }
     }
 
-    protected function getHeaderActions(): array
+    /**
+     * 2. SAVE DATA: Bypass Database, send to API
+     */
+    protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        return [];
-    }
-
-    protected function mutateFormDataBeforeFill(array $data): array
-    {
-        // We still keep this to load the complex nested features
         try {
             $service = new VariantService();
-            // We use $this->record->id which we just set in resolveRecord
+            // Use API to update
+            $service->update($record->id, $data);
+            
+            // Refill local model so the form doesn't go blank
+            $record->fill($data);
+            
+            Notification::make()->success()->title('Saved via API')->send();
+
+            return $record;
+        } catch (\Exception $e) {
+            Notification::make()->danger()->title('Save Failed')->body($e->getMessage())->send();
+            throw $e; // Throwing stops the redirect
+        }
+    }
+
+    /**
+     * 3. FILL REPEATER: Map nested features
+     */
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        try {
+            $service = new VariantService();
             $variant = $service->fetchOne($this->record->id);
 
-            if ($variant && isset($variant['variantFeatures'])) {
+            if ($variant && !empty($variant['variantFeatures'])) {
                 $data['variant_features'] = collect($variant['variantFeatures'])->map(function ($vf) {
                     return [
-                        'feature_id' => $vf['feature']['id'] ?? $vf['feature_id'] ?? null,
-                        'feature_value_id' => $vf['featureValue']['id'] ?? $vf['feature_value_id'] ?? null,
+                        'feature_id' => (int)($vf['feature']['id'] ?? $vf['feature_id']),
+                        'feature_value_id' => (int)($vf['featureValue']['id'] ?? $vf['feature_value_id']),
                     ];
-                })->filter(function ($vf) {
-                    return !empty($vf['feature_id']) && !empty($vf['feature_value_id']);
-                })->values()->toArray();
+                })->toArray();
             }
         } catch (\Exception $e) {
-            Log::warning('Failed to load variant features: ' . $e->getMessage());
+            Log::warning('Feature load failed: ' . $e->getMessage());
         }
 
         return $data;
     }
 
-    protected function getSaveFormAction(): Action
+    protected function getHeaderActions(): array
     {
-        return parent::getSaveFormAction()
-            ->action('saveForm')
-            ->label('Update Variant');
-    }
-
-    public function saveForm(): void
-    {
-        $this->validate();
-
-        try {
-            $data = $this->form->getState();
-
-            $service = new VariantService();
-            // Use the API to update
-            $service->update($this->record->id, $data);
-
-            Notification::make()
-                ->success()
-                ->title('Variant Updated')
-                ->body('Saved via API successfully.')
-                ->send();
-
-        } catch (\Exception $e) {
-            Notification::make()
-                ->danger()
-                ->title('Error Updating')
-                ->body($e->getMessage())
-                ->send();
-        }
+        return [];
     }
 }
