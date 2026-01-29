@@ -14,24 +14,23 @@ class EditVariant extends EditRecord
 {
     protected static string $resource = VariantResource::class;
 
-    /**
-     * Override how Filament finds the record.
-     * We ignore the database/Sushi and fetch strictly from the API.
-     * * @param string|int $key The ID from the URL (Variant ID)
-     */
     protected function resolveRecord($key): Model
     {
         try {
+            // 1. Fetch from API
             $service = new VariantService();
             $data = $service->fetchOne($key);
 
             if (!$data) {
-                // Log this so you can see it in: docker-compose logs app
                 Log::error("EditVariant: API returned null for ID $key");
-                abort(404);
+                // Return a blank record instead of crashing, so you can at least see the UI
+                $record = new Variant();
+                $record->exists = false;
+                return $record;
             }
 
-            // DEFENSIVE CODING: Handle multiple API structures for Product ID
+            // 2. DEFENSIVE ID EXTRACTION
+            // Check every possible place the Product ID might be
             $productId = null;
             if (isset($data['product']) && is_array($data['product'])) {
                 $productId = $data['product']['id'] ?? null;
@@ -39,7 +38,7 @@ class EditVariant extends EditRecord
                 $productId = $data['productId'];
             }
 
-            // Map API Data to Model Attributes safely
+            // 3. MAP ATTRIBUTES SAFELY
             $attributes = [
                 'id' => $data['id'] ?? $key,
                 'name' => $data['name'] ?? '',
@@ -49,40 +48,35 @@ class EditVariant extends EditRecord
                 'price_after_discount' => $data['priceAfterDiscount'] ?? $data['price_after_discount'] ?? 0,
                 'stock' => $data['stock'] ?? 0,
                 
-                // CRITICAL: Force to Integer to match the Select Options in the Form
+                // CRITICAL: Force (int). Matches the keys in the Form.
                 'product_id' => $productId ? (int)$productId : null,
                 
                 'product_name' => $data['product']['name'] ?? 'Unknown',
             ];
 
-            // Create a fake model instance to hold the data
             $record = new Variant();
             $record->forceFill($attributes);
-            $record->exists = true; // Tells Filament "This is an Edit page, not Create"
+            $record->exists = true; // Crucial for Edit Page context
 
             return $record;
 
         } catch (\Exception $e) {
-            // This prevents the generic 500 page and logs the real error
-            Log::error("EditVariant Crash: " . $e->getMessage());
-            Log::error("Stack Trace: " . $e->getTraceAsString());
-            abort(500, "Variant Load Error: " . $e->getMessage());
+            // Log the REAL error so we can debug without crashing
+            Log::error("EditVariant Critical Crash: " . $e->getMessage());
+            Log::error($e->getTraceAsString());
+            
+            // Re-throw so Filament handles the 500, but now we have logs
+            throw $e;
         }
     }
 
-    /**
-     * Override saving to bypass database and use API
-     */
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         try {
             $service = new VariantService();
-            // $record->id is the Variant ID from the URL
             $service->update($record->id, $data);
             
-            // Update local instance so the form doesn't go blank
             $record->fill($data);
-            
             Notification::make()->success()->title('Saved via API')->send();
 
             return $record;
@@ -92,27 +86,25 @@ class EditVariant extends EditRecord
         }
     }
 
-    /**
-     * Load the Repeater data (Features)
-     */
     protected function mutateFormDataBeforeFill(array $data): array
     {
         try {
+            // Load features safely
             $service = new VariantService();
-            // Fetch fresh data using Variant ID
             $variant = $service->fetchOne($this->record->id);
 
             if ($variant && !empty($variant['variantFeatures'])) {
                 $data['variant_features'] = collect($variant['variantFeatures'])->map(function ($vf) {
-                    // Safe access with defaults
-                    $featureId = $vf['feature']['id'] ?? $vf['feature_id'] ?? null;
-                    $valueId = $vf['featureValue']['id'] ?? $vf['feature_value_id'] ?? null;
+                    $fId = $vf['feature']['id'] ?? $vf['feature_id'] ?? null;
+                    $vId = $vf['featureValue']['id'] ?? $vf['feature_value_id'] ?? null;
+                    
+                    if (!$fId || !$vId) return null;
 
                     return [
-                        'feature_id' => $featureId ? (int)$featureId : null,
-                        'feature_value_id' => $valueId ? (int)$valueId : null,
+                        'feature_id' => (int)$fId,
+                        'feature_value_id' => (int)$vId,
                     ];
-                })->filter(fn($item) => $item['feature_id'] && $item['feature_value_id'])->values()->toArray();
+                })->filter()->values()->toArray();
             }
         } catch (\Exception $e) {
             Log::warning('Feature load failed: ' . $e->getMessage());
