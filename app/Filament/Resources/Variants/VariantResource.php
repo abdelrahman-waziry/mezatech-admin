@@ -8,11 +8,12 @@ use App\Filament\Resources\Variants\Pages\ListVariants;
 use App\Filament\Resources\Variants\Schemas\VariantForm;
 use App\Filament\Resources\Variants\Tables\VariantsTable;
 use App\Models\Variant;
-use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\DeleteAction;
+use BackedEnum;
 use UnitEnum;
 
 class VariantResource extends Resource
@@ -30,7 +31,28 @@ class VariantResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return VariantsTable::configure($table);
+        // 1. Load the base table config (Columns, Filters)
+        $table = VariantsTable::configure($table);
+
+        // 2. Override the Actions to fix the Edit URL
+        return $table
+            ->actions([
+                EditAction::make()
+                    ->url(function (Variant $record) {
+                        // Priority 1: Get ID from the record itself (Sushi loads it)
+                        // Priority 2: Get ID from the current URL filter
+                        $productId = $record->product_id 
+                            ?? request()->input('filters.product_id.value')
+                            ?? request()->input('tableFilters.product_id.value');
+
+                        return self::getUrl('edit', [
+                            'record' => $record->id,
+                            'product_id' => $productId, // <--- Passes ?product_id=21 to the Edit Page
+                        ]);
+                    }),
+                
+                DeleteAction::make(),
+            ]);
     }
 
     public static function getRelations(): array
