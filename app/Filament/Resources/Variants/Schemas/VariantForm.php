@@ -25,8 +25,8 @@ class VariantForm
                 Select::make('product_id')
                     ->label('Product')
                     ->options(function () {
-                        // RAW HTTP CALL: Bypasses Service Class issues entirely
-                        return Cache::remember('variant_form_products_raw_v3', 60, function() {
+                        // RAW HTTP CALL: Bypasses Service Class issues
+                        return Cache::remember('variant_form_products_list_safe', 60, function() {
                             try {
                                 $token = app(ApiTokenService::class)->getToken();
                                 $response = Http::withHeaders([
@@ -38,12 +38,17 @@ class VariantForm
                                 
                                 $data = $response->json();
                                 $products = $data['products'] ?? $data ?? [];
-                                dd($products);
 
-                                // Strict Integer Mapping [Integer ID => String Name]
-                                return collect($products)->pluck('name', 'id')
-                                    ->mapWithKeys(fn($name, $id) => [(int)$id => $name])
-                                    ->toArray();
+                                if (!is_array($products)) return [];
+
+                                // Strict Integer Mapping [ID => Name]
+                                $options = [];
+                                foreach ($products as $p) {
+                                    if (isset($p['id']) && isset($p['name'])) {
+                                        $options[(int)$p['id']] = $p['name'];
+                                    }
+                                }
+                                return $options;
 
                             } catch (\Exception $e) {
                                 Log::error('VariantForm API Error: ' . $e->getMessage());
@@ -73,6 +78,7 @@ class VariantForm
                             ->reactive()
                             ->afterStateUpdated(fn ($set) => $set('feature_value_id', null)),
 
+                        // Renamed to feature_value_id to match API structure
                         Select::make('feature_value_id')
                             ->label('Value')
                             ->options(fn ($get) => self::getFeatureValues($get('../../product_id'), $get('feature_id')))
@@ -88,33 +94,48 @@ class VariantForm
             ]);
     }
 
-    // --- Safe Helper Methods ---
+    // --- Helper Methods (Cached & Safe) ---
 
     protected static function getFeaturesMap($productId)
     {
         if (!$productId) return [];
         $features = self::fetchProductFeatures((int)$productId);
         
-        return collect($features)->pluck('name', 'id')
-            ->mapWithKeys(fn($name, $id) => [(int)$id => $name])
-            ->toArray();
+        $map = [];
+        foreach ($features as $f) {
+            if (isset($f['id']) && isset($f['name'])) {
+                $map[(int)$f['id']] = $f['name'];
+            }
+        }
+        return $map;
     }
 
     protected static function getFeatureValues($productId, $featureId)
     {
         if (!$productId || !$featureId) return [];
         $features = self::fetchProductFeatures((int)$productId);
+        
+        // Find the feature object by ID
         $feature = collect($features)->firstWhere('id', (int)$featureId);
         
-        return collect($feature['values'] ?? [])
-            ->pluck('value', 'id') 
-            ->mapWithKeys(fn($val, $id) => [(int)$id => $val])
-            ->toArray();
+        if (!$feature || empty($feature['values'])) return [];
+
+        $map = [];
+        foreach ($feature['values'] as $val) {
+            // Handle structure: ['id' => 1, 'value' => 'Red']
+            $id = $val['id'] ?? null;
+            $label = $val['value'] ?? $val['name'] ?? null;
+            
+            if ($id && $label) {
+                $map[(int)$id] = $label;
+            }
+        }
+        return $map;
     }
 
     protected static function fetchProductFeatures(int $productId): array
     {
-        return Cache::remember("product_features_raw_{$productId}", 600, function () use ($productId) {
+        return Cache::remember("product_features_safe_{$productId}", 600, function () use ($productId) {
             try {
                 $token = app(ApiTokenService::class)->getToken();
                 $response = Http::withHeaders([
@@ -122,7 +143,10 @@ class VariantForm
                     'Accept' => 'application/json'
                 ])->timeout(5)->get("https://bestrepairegypt.com/v1/products/{$productId}");
                 
-                return $response->json()['features'] ?? [];
+                if (!$response->successful()) return [];
+                $json = $response->json();
+                
+                return $json['features'] ?? [];
             } catch (\Exception $e) {
                 return [];
             }
