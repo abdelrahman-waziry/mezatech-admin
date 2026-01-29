@@ -26,6 +26,7 @@ class EditVariant extends EditRecord
             $service = new VariantService();
             $data = $service->fetchOne($key);
 
+            dd($data);
             if (!$data) {
                 Log::error("EditVariant: API returned null for ID $key");
                 // Return a blank record to allow the page to load (prevent 500 crash)
