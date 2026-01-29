@@ -15,7 +15,9 @@ class EditVariant extends EditRecord
     protected static string $resource = VariantResource::class;
 
     /**
-     * 1. LOAD DATA: Fetch from API and force types to match Form
+     * Override how Filament finds the record.
+     * We ignore the database/Sushi and fetch strictly from the API.
+     * * @param string|int $key The ID from the URL (Variant ID)
      */
     protected function resolveRecord($key): Model
     {
@@ -24,14 +26,22 @@ class EditVariant extends EditRecord
             $data = $service->fetchOne($key);
 
             if (!$data) {
-                abort(404, "Variant not found in API");
+                // Log this so you can see it in: docker-compose logs app
+                Log::error("EditVariant: API returned null for ID $key");
+                abort(404);
             }
 
-            // ROBUST ID FINDER: Check both nested object and flat key
-            $productId = $data['product']['id'] ?? $data['productId'] ?? null;
+            // DEFENSIVE CODING: Handle multiple API structures for Product ID
+            $productId = null;
+            if (isset($data['product']) && is_array($data['product'])) {
+                $productId = $data['product']['id'] ?? null;
+            } elseif (isset($data['productId'])) {
+                $productId = $data['productId'];
+            }
 
+            // Map API Data to Model Attributes safely
             $attributes = [
-                'id' => $data['id'],
+                'id' => $data['id'] ?? $key,
                 'name' => $data['name'] ?? '',
                 'buying_price' => $data['buyingPrice'] ?? $data['buying_price'] ?? 0,
                 'price_before_discount' => $data['priceBeforeDiscount'] ?? $data['price_before_discount'] ?? 0,
@@ -39,39 +49,38 @@ class EditVariant extends EditRecord
                 'price_after_discount' => $data['priceAfterDiscount'] ?? $data['price_after_discount'] ?? 0,
                 'stock' => $data['stock'] ?? 0,
                 
-                // CRITICAL FIX: Force Integer. 
-                // The Form options are Integers, so this MUST match exactly.
+                // CRITICAL: Force to Integer to match the Select Options in the Form
                 'product_id' => $productId ? (int)$productId : null,
                 
                 'product_name' => $data['product']['name'] ?? 'Unknown',
             ];
 
-            // Debug Log: Check this if it still fails
-            Log::info('EditVariant Loaded:', ['id' => $data['id'], 'product_id' => $attributes['product_id']]);
-
+            // Create a fake model instance to hold the data
             $record = new Variant();
             $record->forceFill($attributes);
-            $record->exists = true; 
+            $record->exists = true; // Tells Filament "This is an Edit page, not Create"
 
             return $record;
 
         } catch (\Exception $e) {
+            // This prevents the generic 500 page and logs the real error
             Log::error("EditVariant Crash: " . $e->getMessage());
-            throw $e;
+            Log::error("Stack Trace: " . $e->getTraceAsString());
+            abort(500, "Variant Load Error: " . $e->getMessage());
         }
     }
 
     /**
-     * 2. SAVE DATA: Bypass Database, send to API
+     * Override saving to bypass database and use API
      */
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         try {
             $service = new VariantService();
-            // Use API to update
+            // $record->id is the Variant ID from the URL
             $service->update($record->id, $data);
             
-            // Refill local model so the form doesn't go blank
+            // Update local instance so the form doesn't go blank
             $record->fill($data);
             
             Notification::make()->success()->title('Saved via API')->send();
@@ -79,26 +88,31 @@ class EditVariant extends EditRecord
             return $record;
         } catch (\Exception $e) {
             Notification::make()->danger()->title('Save Failed')->body($e->getMessage())->send();
-            throw $e; // Throwing stops the redirect
+            throw $e;
         }
     }
 
     /**
-     * 3. FILL REPEATER: Map nested features
+     * Load the Repeater data (Features)
      */
     protected function mutateFormDataBeforeFill(array $data): array
     {
         try {
             $service = new VariantService();
+            // Fetch fresh data using Variant ID
             $variant = $service->fetchOne($this->record->id);
 
             if ($variant && !empty($variant['variantFeatures'])) {
                 $data['variant_features'] = collect($variant['variantFeatures'])->map(function ($vf) {
+                    // Safe access with defaults
+                    $featureId = $vf['feature']['id'] ?? $vf['feature_id'] ?? null;
+                    $valueId = $vf['featureValue']['id'] ?? $vf['feature_value_id'] ?? null;
+
                     return [
-                        'feature_id' => (int)($vf['feature']['id'] ?? $vf['feature_id']),
-                        'feature_value_id' => (int)($vf['featureValue']['id'] ?? $vf['feature_value_id']),
+                        'feature_id' => $featureId ? (int)$featureId : null,
+                        'feature_value_id' => $valueId ? (int)$valueId : null,
                     ];
-                })->toArray();
+                })->filter(fn($item) => $item['feature_id'] && $item['feature_value_id'])->values()->toArray();
             }
         } catch (\Exception $e) {
             Log::warning('Feature load failed: ' . $e->getMessage());
