@@ -27,8 +27,9 @@ class VariantForm
 
                 Select::make('product_id')
                     ->label('Product')
-                    // Forces Product Sushi model to load from API
-                    ->options(fn () => Product::all()->pluck('name', 'id')->toArray())
+                    // FIX 1: Force keys to strings. This ensures they match the string ID 
+                    // we forced in EditVariant.php, preventing "empty" dropdowns.
+                    ->options(fn () => Product::all()->pluck('name', 'id')->map(fn($v, $k) => (string)$k)->toArray())
                     ->required()
                     ->searchable()
                     ->preload()
@@ -81,11 +82,11 @@ class VariantForm
                             ->searchable()
                             ->preload()
                             ->live(onBlur: true)
-                            // FIX 1: Reset 'feature_value_id' (not feature_value)
+                            // FIX 2: Reset 'feature_value_id' (renamed from feature_value)
                             ->afterStateUpdated(fn ($state, callable $set) => $set('feature_value_id', null))
                             ->disabled(fn (callable $get) => !$get('../../product_id')),
 
-                        // FIX 2: Renamed to 'feature_value_id' to match EditVariant and API data
+                        // FIX 3: Renamed to 'feature_value_id' to match EditVariant logic
                         Select::make('feature_value_id')
                             ->label('Feature Value')
                             ->options(function (callable $get) {
@@ -108,17 +109,20 @@ class VariantForm
                     ->disabled(fn (callable $get) => !$get('product_id'))
                     ->itemLabel(function (array $state, callable $get): ?string {
                         $productId = $get('../../product_id');
-                        // FIX 3: Update keys to use _id
-                        if (!$productId || empty($state['feature_id']) || empty($state['feature_value_id'])) {
+                        
+                        // FIX 4: Check for _id keys
+                        $featureId = $state['feature_id'] ?? null;
+                        $valueId = $state['feature_value_id'] ?? null;
+
+                        if (!$productId || !$featureId || !$valueId) {
                             return 'New Feature';
                         }
                         
                         $featuresMap = self::getCachedProductFeaturesMap($productId);
-                        // Pass feature_id from state
-                        $valuesMap = self::getCachedProductFeatureValues($productId, $state['feature_id']);
+                        $valuesMap = self::getCachedProductFeatureValues($productId, $featureId);
                         
-                        $featureName = $featuresMap[$state['feature_id']] ?? 'Feature';
-                        $valueName = $valuesMap[$state['feature_value_id']] ?? 'Value';
+                        $featureName = $featuresMap[$featureId] ?? 'Feature';
+                        $valueName = $valuesMap[$valueId] ?? 'Value';
                         
                         return "{$featureName} - {$valueName}";
                     }),
@@ -194,7 +198,7 @@ class VariantForm
     }
 
     /**
-     * FIX 4: Return ID => Label mapping.
+     * FIX 5: Return ID => Label mapping.
      * The dropdown needs IDs as keys to match the 'feature_value_id' we save.
      */
     protected static function getProductFeatureValues(int $productId, int $featureId): array
