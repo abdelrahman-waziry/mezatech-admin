@@ -38,6 +38,7 @@ class VariantForm
                                 
                                 $data = $response->json();
                                 $products = $data['products'] ?? $data ?? [];
+                                dd($products);
 
                                 // Strict Integer Mapping [Integer ID => String Name]
                                 return collect($products)->pluck('name', 'id')
