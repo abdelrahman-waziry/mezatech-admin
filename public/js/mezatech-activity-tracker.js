@@ -52,6 +52,7 @@
             }
 
             const payload = {
+                request_id: this._generateGUID(),
                 endpoint: requestData.endpoint,
                 method: requestData.method || 'GET',
                 timestamp: new Date().toISOString(),
@@ -205,6 +206,17 @@
             if (ua.includes('Android')) return 'Android';
             if (ua.includes('iPhone') || ua.includes('iPad')) return 'iOS';
             return 'Unknown';
+        },
+
+        /**
+         * Generate a GUID (UUID v4)
+         */
+        _generateGUID: function () {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
         }
     };
 
