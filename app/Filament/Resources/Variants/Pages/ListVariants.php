@@ -43,11 +43,12 @@ class ListVariants extends ListRecords
             // This ensures getRows() uses the correct product filter
             Variant::$currentProductId = (int) $productId;
             
+            // Clear the request cache to ensure fresh data on pagination/filter changes
+            Variant::clearRequestCache();
+            
             // Get fresh data by calling getRows on a new instance
             $freshModel = new Variant();
             $rows = $freshModel->getRows();
-            
-            Log::info('Fetched variant rows from getRows', ['count' => count($rows), 'productId' => $productId, 'first_row' => $rows[0] ?? null]);
             
             // Create model instances with proper attribute setup
             $variants = collect($rows)->map(function ($row) use ($productId) {
@@ -62,13 +63,16 @@ class ListVariants extends ListRecords
                 return $variant;
             });
             
-            Log::info('Created variants collection', ['count' => $variants->count(), 'productId' => $productId]);
+            // Get page from request (works for both initial load and Livewire updates)
+            $page = request()->input('page', 1);
+            if (is_array($page)) {
+                $page = $page[0] ?? 1;
+            }
+            $page = max(1, (int) $page);
             
-            $page = max(1, (int) request()->query('page', 1));
             $perPage = 15;
             $total = $variants->count();
             $items = $variants->forPage($page, $perPage)->values()->all();
-            
             
             return new LengthAwarePaginator(
                 $items,

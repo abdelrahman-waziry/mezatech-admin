@@ -26,16 +26,42 @@ class Variant extends Model
     protected static array $requestCache = [];
 
     /**
-     * Get the product ID filter - check static property first, then request
+     * Clear the request cache - useful for pagination/filter changes
+     */
+    public static function clearRequestCache(): void
+    {
+        static::$requestCache = [];
+    }
+
+    /**
+     * Get the product ID filter - check multiple sources
+     * Priority: static property > URL query > session > request input
      */
     protected function getFilterProductId(): ?int
     {
-        // Check static property first (set by ListVariants)
+        // Check static property first (set by ListVariants or EditVariant)
         if (static::$currentProductId !== null) {
+            // Also store in session for AJAX request persistence
+            session(['variant_edit_product_id' => static::$currentProductId]);
             return static::$currentProductId;
         }
 
-        // Fallback to request (for backwards compatibility)
+        // Check URL query parameter (passed from listing page to edit page)
+        $productId = request()->query('product_id');
+        if ($productId) {
+            static::$currentProductId = (int) $productId;
+            session(['variant_edit_product_id' => (int) $productId]);
+            return (int) $productId;
+        }
+
+        // Check session (for AJAX requests that lose the static property)
+        $sessionProductId = session('variant_edit_product_id');
+        if ($sessionProductId) {
+            static::$currentProductId = (int) $sessionProductId;
+            return (int) $sessionProductId;
+        }
+
+        // Fallback to request input (for table filters)
         $productId = request()->query('tableFilters.product_id.value')
             ?? request()->query('filters.product_id');
 
@@ -49,6 +75,9 @@ class Variant extends Model
             $productId = $filters['product_id'] ?? null;
         }
 
+        if ($productId) {
+            static::$currentProductId = (int) $productId;
+        }
 
         return $productId ? (int) $productId : null;
     }

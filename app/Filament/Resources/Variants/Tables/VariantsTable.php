@@ -45,7 +45,7 @@ class VariantsTable
                 Action::make('edit')
                     ->label('Edit')
                     ->icon('heroicon-o-pencil')
-                    ->url(fn ($record) => VariantResource::getUrl('edit', ['record' => $record['id']])),
+                    ->url(fn ($record) => VariantResource::getUrl('edit', ['record' => $record['id']]) . '?product_id=' . ($record['product_id'] ?? '')),
                 Action::make('delete')
                     ->label('Delete')
                     ->icon('heroicon-o-trash')
