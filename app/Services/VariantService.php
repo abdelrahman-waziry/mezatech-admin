@@ -71,6 +71,52 @@ class VariantService extends BaseExternalService
     }
 
     /**
+     * Clear variant features before deleting a variant.
+     * Updates the variant with an empty variantFeatures array via PUT
+     * to remove FK references on the backend before deletion.
+     */
+    public function clearVariantFeatures(string $id): void
+    {
+        try {
+            // Fetch the current variant data from the API
+            $variant = $this->fetchOne($id);
+
+            if (!$variant) {
+                \Illuminate\Support\Facades\Log::warning("Cannot clear variant features: variant {$id} not found");
+                return;
+            }
+
+            // Build payload with existing data but empty variantFeatures
+            $payload = [
+                'name' => $variant['name'] ?? null,
+                'buyingPrice' => isset($variant['buyingPrice']) ? (float) $variant['buyingPrice'] : null,
+                'priceBeforeDiscount' => isset($variant['priceBeforeDiscount']) ? (float) $variant['priceBeforeDiscount'] : null,
+                'discount' => isset($variant['discount']) ? (float) $variant['discount'] : null,
+                'priceAfterDiscount' => isset($variant['priceAfterDiscount']) ? (float) $variant['priceAfterDiscount'] : null,
+                'stock' => isset($variant['stock']) ? (int) $variant['stock'] : null,
+                'variantFeatures' => [], // Clear all variant features
+            ];
+
+            if (isset($variant['product']['id'])) {
+                $payload['product'] = ['id' => (int) $variant['product']['id']];
+            }
+
+            $url = $this->baseUrl . '/' . $this->getResourceName() . '/' . $id;
+
+            $this->httpClient->request('PUT', $url, [
+                'headers' => $this->getHeaders(),
+                'json' => $payload,
+                'timeout' => 30,
+            ]);
+
+            \Illuminate\Support\Facades\Log::info("Cleared variant features for variant {$id}");
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Failed to clear variant features for variant {$id}: {$e->getMessage()}");
+            throw $e;
+        }
+    }
+
+    /**
      * Clear variant caches after operations
      */
     protected function clearVariantCaches($productId = null): void
