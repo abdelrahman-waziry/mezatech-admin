@@ -65,6 +65,9 @@ class VariantsTable
                                 throw new \Exception("Cannot delete: Record not found (ID missing).");
                             }
 
+                            // Delete associated variant features first to avoid FK constraint errors
+                            \App\Models\VariantFeature::where('variant_id', $id)->delete();
+
                             $service = new \App\Services\VariantService();
                             $service->delete((string) $id);
 

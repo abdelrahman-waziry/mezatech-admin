@@ -395,6 +395,9 @@ class Variant extends Model
     public function delete(): bool
     {
         try {
+            // Delete associated variant features first to avoid FK constraint errors
+            VariantFeature::where('variant_id', $this->id)->delete();
+
             $service = new VariantService();
             $service->delete((string) $this->id);
             
