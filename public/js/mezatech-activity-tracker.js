@@ -18,7 +18,8 @@
         config: {
             baseUrl: 'https://mezatech-dashboard.test/api/v1',
             debug: true,
-            enabled: false
+            enabled: false,
+            allowedDomains: ['https://blackmint.me']
         },
 
         // Store original functions
@@ -139,6 +140,14 @@
         _sendToAPI: async function (requestData) {
             // Don't log our own API calls to prevent infinite loop
             if (requestData.endpoint.includes('/analytics/requests') || requestData.endpoint.includes('/analytics/events')) {
+                return;
+            }
+
+            // Only log requests to allowed domains
+            const isAllowed = this.config.allowedDomains.some(domain =>
+                requestData.endpoint.startsWith(domain)
+            );
+            if (!isAllowed) {
                 return;
             }
 
