@@ -22,7 +22,7 @@ class StoreAnalyticsEventRequest extends FormRequest
             'user_id' => ['nullable', 'string'],
             'context.brand' => ['required_if:event_name,tradein_started,tradein_completed,requote_requested,quote_viewed', 'string'],
             'context.model' => ['required_if:event_name,tradein_started,tradein_completed,requote_requested,quote_viewed', 'string'],
-            'context.condition' => ['required_if:event_name,tradein_completed', new Enum(Condition::class)],
+            'context.condition' => ['nullable', 'required_if:event_name,tradein_completed', new Enum(Condition::class)],
             'context.quoted_price' => ['nullable', 'numeric'],
             'location.country' => ['required', 'string'],
             'location.city' => ['required', 'string'],

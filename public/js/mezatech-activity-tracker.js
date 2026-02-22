@@ -75,16 +75,22 @@
                 return { success: false, message: 'Invalid condition' };
             }
 
+            const context = {
+                brand: options.context?.brand || '',
+                model: options.context?.model || ''
+            };
+            if (options.context?.condition) {
+                context.condition = options.context.condition;
+            }
+            if (options.context?.quoted_price != null) {
+                context.quoted_price = parseFloat(options.context.quoted_price);
+            }
+
             const payload = {
                 event_name: eventName,
                 timestamp: this._getTimestamp(),
                 user_id: options.userId || null,
-                context: {
-                    brand: options.context?.brand || '',
-                    model: options.context?.model || '',
-                    condition: options.context?.condition || null,
-                    quoted_price: options.context?.quoted_price != null ? parseFloat(options.context.quoted_price) : null
-                },
+                context: context,
                 location: {
                     country: options.location?.country || '',
                     city: options.location?.city || '',
