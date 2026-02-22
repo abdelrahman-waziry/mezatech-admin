@@ -51,21 +51,27 @@
                 return;
             }
 
+            // Ensure method is a valid enum value (GET, POST, PUT, DELETE)
+            const validMethods = ['GET', 'POST', 'PUT', 'DELETE'];
+            const method = validMethods.includes((requestData.method || '').toUpperCase())
+                ? requestData.method.toUpperCase()
+                : 'GET';
+
             const payload = {
                 request_id: this._generateGUID(),
                 endpoint: requestData.endpoint,
-                method: requestData.method || 'GET',
-                timestamp: new Date().toISOString(),
+                method: method,
+                timestamp: this._getTimestamp(),
                 app_source: 'web',
                 app_version: '1.0.0',
                 device: {
                     os: this._getOS(),
                     model: navigator.userAgent.substring(0, 100),
-                    network: navigator.onLine ? 'online' : 'offline'
+                    network: this._getNetwork()
                 },
                 response: {
-                    status: requestData.status || 0,
-                    duration_ms: requestData.duration_ms || 0,
+                    status: parseInt(requestData.status, 10) || 0,
+                    duration_ms: parseInt(requestData.duration_ms, 10) || 0,
                     error_type: requestData.error_type || null
                 }
             };
@@ -206,6 +212,41 @@
             if (ua.includes('Android')) return 'Android';
             if (ua.includes('iPhone') || ua.includes('iPad')) return 'iOS';
             return 'Unknown';
+        },
+
+        /**
+         * Get ISO-8601 timestamp with timezone offset (format: Y-m-d\TH:i:sP)
+         * e.g. "2026-02-01T16:30:00+02:00"
+         */
+        _getTimestamp: function () {
+            const now = new Date();
+            const offset = -now.getTimezoneOffset();
+            const sign = offset >= 0 ? '+' : '-';
+            const absOffset = Math.abs(offset);
+            const hours = String(Math.floor(absOffset / 60)).padStart(2, '0');
+            const minutes = String(absOffset % 60).padStart(2, '0');
+
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+
+            return `${year}-${month}-${day}T${h}:${m}:${s}${sign}${hours}:${minutes}`;
+        },
+
+        /**
+         * Get network type: 'wifi', 'cellular', or 'unknown'
+         * Uses the Network Information API when available
+         */
+        _getNetwork: function () {
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (connection && connection.type) {
+                if (connection.type === 'wifi') return 'wifi';
+                if (connection.type === 'cellular') return 'cellular';
+            }
+            return 'unknown';
         },
 
         /**
