@@ -1,13 +1,14 @@
 /**
- * MezaTech Request Logger
+ * MezaTech Analytics SDK
  * 
- * Automatically logs ALL network requests made by the website.
- * This script intercepts fetch() and XMLHttpRequest calls.
+ * Automatically logs ALL network requests made by the website
+ * and provides trackEvent() for business event tracking.
  * 
  * Usage:
  * 1. Include this script in your HTML
  * 2. Initialize: MezaTech.init({ baseUrl: 'https://your-api.com/api/v1' });
  * 3. All network calls will be automatically logged!
+ * 4. Track events: MezaTech.trackEvent('tradein_started', { context: { brand: 'Apple', model: 'iPhone 15' }, location: { country: 'Egypt', city: 'Cairo' } });
  */
 
 (function (global) {
@@ -43,11 +44,95 @@
         },
 
         /**
+         * Track an analytics event
+         * @param {string} eventName - Event name: 'tradein_started', 'tradein_completed', 'requote_requested', 'quote_viewed'
+         * @param {Object} options - Event options
+         * @param {Object} options.context - Context data (required)
+         * @param {string} options.context.brand - Device brand, e.g. 'Apple', 'Samsung' (required)
+         * @param {string} options.context.model - Device model, e.g. 'iPhone 15 Pro' (required)
+         * @param {string} options.context.condition - Condition: 'excellent', 'good', 'fair', 'damaged' (required for tradein_completed)
+         * @param {number} options.context.quoted_price - Quoted trade-in price (optional)
+         * @param {Object} options.location - Location data (required)
+         * @param {string} options.location.country - Country name (required)
+         * @param {string} options.location.city - City name (required)
+         * @param {string} options.location.area - Area (optional)
+         * @param {string} options.location.district - District (optional)
+         * @param {string} options.userId - Optional user ID
+         * @returns {Promise<Object>} - API response
+         */
+        trackEvent: async function (eventName, options = {}) {
+            // Validate event name
+            const validEvents = ['tradein_started', 'tradein_completed', 'requote_requested', 'quote_viewed'];
+            if (!validEvents.includes(eventName)) {
+                console.error('[MezaTech] Invalid event_name. Must be one of:', validEvents.join(', '));
+                return { success: false, message: 'Invalid event_name' };
+            }
+
+            // Validate condition enum if provided
+            const validConditions = ['excellent', 'good', 'fair', 'damaged'];
+            if (options.context?.condition && !validConditions.includes(options.context.condition)) {
+                console.error('[MezaTech] Invalid condition. Must be one of:', validConditions.join(', '));
+                return { success: false, message: 'Invalid condition' };
+            }
+
+            const payload = {
+                event_name: eventName,
+                timestamp: this._getTimestamp(),
+                user_id: options.userId || null,
+                context: {
+                    brand: options.context?.brand || '',
+                    model: options.context?.model || '',
+                    condition: options.context?.condition || null,
+                    quoted_price: options.context?.quoted_price != null ? parseFloat(options.context.quoted_price) : null
+                },
+                location: {
+                    country: options.location?.country || '',
+                    city: options.location?.city || '',
+                    area: options.location?.area || null,
+                    district: options.location?.district || null
+                },
+                device: {
+                    brand: this._getBrowserName(),
+                    model: navigator.userAgent.substring(0, 100),
+                    os_version: this._getOS()
+                }
+            };
+
+            if (this.config.debug) {
+                console.log('[MezaTech] Tracking event:', payload);
+            }
+
+            try {
+                const response = await this._originalFetch.call(global, `${this.config.baseUrl}/analytics/events`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json().catch(() => ({}));
+
+                if (this.config.debug) {
+                    console.log('[MezaTech] Event response:', { success: response.ok, status: response.status, data: result });
+                }
+
+                return { success: response.ok, status: response.status, data: result };
+            } catch (error) {
+                if (this.config.debug) {
+                    console.error('[MezaTech] Failed to track event:', error.message);
+                }
+                return { success: false, message: error.message };
+            }
+        },
+
+        /**
          * Send tracked request to MezaTech API
          */
         _sendToAPI: async function (requestData) {
             // Don't log our own API calls to prevent infinite loop
-            if (requestData.endpoint.includes('/analytics/requests')) {
+            if (requestData.endpoint.includes('/analytics/requests') || requestData.endpoint.includes('/analytics/events')) {
                 return;
             }
 
@@ -77,7 +162,7 @@
             };
 
             if (this.config.debug) {
-                console.log('[MezaTech] Logging:', payload);
+                console.log('[MezaTech] Logging request:', payload);
             }
 
             try {
@@ -171,7 +256,7 @@
                     const endpoint = xhr._mezatech.url;
 
                     // Don't log our own API calls
-                    if (endpoint.includes('/analytics/requests')) {
+                    if (endpoint.includes('/analytics/requests') || endpoint.includes('/analytics/events')) {
                         return;
                     }
 
@@ -211,6 +296,19 @@
             if (ua.includes('Linux')) return 'Linux';
             if (ua.includes('Android')) return 'Android';
             if (ua.includes('iPhone') || ua.includes('iPad')) return 'iOS';
+            return 'Unknown';
+        },
+
+        /**
+         * Get browser name for device.brand
+         */
+        _getBrowserName: function () {
+            const ua = navigator.userAgent;
+            if (ua.includes('Chrome') && !ua.includes('Edg')) return 'Chrome';
+            if (ua.includes('Firefox')) return 'Firefox';
+            if (ua.includes('Safari') && !ua.includes('Chrome')) return 'Safari';
+            if (ua.includes('Edg')) return 'Edge';
+            if (ua.includes('Opera') || ua.includes('OPR')) return 'Opera';
             return 'Unknown';
         },
 
