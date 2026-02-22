@@ -4,9 +4,11 @@ namespace App\Filament\Resources\Variants\Tables;
 
 use App\Models\Product;
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Tables;
 use Filament\Tables\Table;
 use App\Filament\Resources\Variants\VariantResource;
+use Illuminate\Database\Eloquent\Collection;
 
 class VariantsTable
 {
@@ -61,7 +63,6 @@ class VariantsTable
                             }
 
                             if (!$id) {
-                                // If record is null (Sushi hydration failed?), we can't delete
                                 throw new \Exception("Cannot delete: Record not found (ID missing).");
                             }
 
@@ -89,6 +90,93 @@ class VariantsTable
                         }
                     }),
             ])
-;
+            ->toolbarActions([
+                BulkAction::make('bulk_delete')
+                    ->label('Delete Selected')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading('Delete Selected Variants')
+                    ->modalDescription('Are you sure you want to delete all selected variants? This will also clear their features. This action cannot be undone.')
+                    ->modalSubmitActionLabel('Yes, delete them')
+                    ->deselectRecordsAfterCompletion()
+                    ->action(function (Collection $records) {
+                        $totalCount = $records->count();
+
+                        // Show a loading notification immediately
+                        \Filament\Notifications\Notification::make('bulk-delete-progress')
+                            ->info()
+                            ->title('Deleting Variants...')
+                            ->body("Processing {$totalCount} variant(s). Please wait, do not close this page.")
+                            ->persistent()
+                            ->send();
+
+                        $service = new \App\Services\VariantService();
+                        $successCount = 0;
+                        $failedCount = 0;
+                        $errors = [];
+
+                        foreach ($records as $record) {
+                            try {
+                                $id = null;
+                                if (is_object($record)) {
+                                    $id = $record->id;
+                                } elseif (is_array($record)) {
+                                    $id = $record['id'] ?? null;
+                                }
+
+                                if (!$id) {
+                                    $failedCount++;
+                                    $errors[] = 'Skipped record with missing ID';
+                                    continue;
+                                }
+
+                                // Clear variant features first via API to avoid FK constraint errors
+                                $service->clearVariantFeatures((string) $id);
+
+                                // Delete the variant
+                                $service->delete((string) $id);
+
+                                $successCount++;
+                            } catch (\Exception $e) {
+                                $failedCount++;
+                                $variantName = is_object($record) ? ($record->name ?? $id) : ($record['name'] ?? $id);
+                                $errors[] = "{$variantName}: {$e->getMessage()}";
+                                \Illuminate\Support\Facades\Log::error("Bulk delete failed for variant {$id}", [
+                                    'error' => $e->getMessage(),
+                                ]);
+                            }
+                        }
+
+                        // Close the loading notification
+                        \Filament\Notifications\Notification::make('bulk-delete-progress')
+                            ->close();
+
+                        // Build result notification
+                        if ($failedCount === 0) {
+                            \Filament\Notifications\Notification::make()
+                                ->success()
+                                ->title('Variants Deleted')
+                                ->body("{$successCount} variant(s) deleted successfully.")
+                                ->send();
+                        } elseif ($successCount === 0) {
+                            \Filament\Notifications\Notification::make()
+                                ->danger()
+                                ->title('Bulk Delete Failed')
+                                ->body("Failed to delete all {$failedCount} variant(s).\n" . implode("\n", array_slice($errors, 0, 5)))
+                                ->send();
+                        } else {
+                            \Filament\Notifications\Notification::make()
+                                ->warning()
+                                ->title('Partially Deleted')
+                                ->body("{$successCount} deleted, {$failedCount} failed.\n" . implode("\n", array_slice($errors, 0, 5)))
+                                ->send();
+                        }
+
+                        // Redirect to refresh the table with fresh data
+                        return redirect(request()->header('Referer'));
+                    }),
+            ])
+        ;
     }
 }
