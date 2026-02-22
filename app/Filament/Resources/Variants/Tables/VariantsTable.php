@@ -101,15 +101,8 @@ class VariantsTable
                     ->modalSubmitActionLabel('Yes, delete them')
                     ->deselectRecordsAfterCompletion()
                     ->action(function (Collection $records) {
-                        $totalCount = $records->count();
-
-                        // Show a loading notification immediately
-                        \Filament\Notifications\Notification::make('bulk-delete-progress')
-                            ->info()
-                            ->title('Deleting Variants...')
-                            ->body("Processing {$totalCount} variant(s). Please wait, do not close this page.")
-                            ->persistent()
-                            ->send();
+                        // Extend execution time for bulk operations (2 min per variant should be plenty)
+                        set_time_limit(max(120, $records->count() * 15));
 
                         $service = new \App\Services\VariantService();
                         $successCount = 0;
@@ -147,10 +140,6 @@ class VariantsTable
                                 ]);
                             }
                         }
-
-                        // Close the loading notification
-                        \Filament\Notifications\Notification::make('bulk-delete-progress')
-                            ->close();
 
                         // Build result notification
                         if ($failedCount === 0) {
