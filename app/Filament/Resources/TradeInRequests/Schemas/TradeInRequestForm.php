@@ -211,10 +211,15 @@ class TradeInRequestForm
                 if ($index == 2) {
                      $conditionName = (int)$conditionId === 1 ? 'Yes' : 'No';
                 } elseif ($index == 4 || $index == 5) {
+                    // Inverted scale: 0=cracked, 1=visible scratches, 2=light scratches, 3=no scratches
                     if ((int)$conditionId === 0) {
-                        $conditionName = 'No Scratches';
+                        $conditionName = 'Cracked / Broken';
                     } elseif ((int)$conditionId === 1) {
-                        $conditionName = 'Scratched';
+                        $conditionName = 'Visible Scratches';
+                    } elseif ((int)$conditionId === 2) {
+                        $conditionName = 'Light Scratches';
+                    } elseif ((int)$conditionId === 3) {
+                        $conditionName = 'No Scratches';
                     }
                 } elseif ($conditionId == 1) {
                     $conditionName = 'Functioning';
@@ -227,13 +232,10 @@ class TradeInRequestForm
                 $priceModifier = $condition ? (float) $condition->price_modifier : 1.0;
                 $impactLabel = '-';
                 
-                // If part is reported as Not Functioning (0) and it's not one of the exclude parts (2, 4, 5)
+                // If part is reported as Not Functioning / Cracked (0) and it's not the Repaired Before part (index 2)
                 // Then the impact is deducting the full price of the part
-                if ((int)$conditionId === 0 && !in_array($index, [2, 4, 5]) && $partPrice > 0) {
+                if ((int)$conditionId === 0 && $index != 2 && $partPrice > 0) {
                      $impactLabel = '- ' . number_format($partPrice, 2) . ' EGP';
-                     // Force modifier to 0 to separate it from percentage based modifiers in sorting if needed, 
-                     // or keep as 1.0 if we don't want it to affect the sorting logic which relies on < 1.0
-                     // For now, let's leave priceModifier as is or set to unique value if sorting matters.
                 } elseif ($priceModifier < 1.0) {
                     $percentage = (1.0 - $priceModifier) * 100;
                     $impactLabel = '-' . round($percentage) . '%';
