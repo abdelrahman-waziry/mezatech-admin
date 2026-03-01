@@ -2,8 +2,10 @@
 
 namespace App\Filament\Resources\TradeInRequests\Tables;
 
+use Filament\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 
 class TradeInRequestsTable
 {
@@ -133,7 +135,59 @@ class TradeInRequestsTable
                 ]),
             ])
             ->recordAction('view_comment')
-            ->toolbarActions([]);
+            ->toolbarActions([
+                BulkAction::make('bulk_delete')
+                    ->label('Delete Selected')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading('Delete Selected Trade-In Requests')
+                    ->modalDescription('Are you sure you want to delete all selected trade-in requests? This action cannot be undone.')
+                    ->modalSubmitActionLabel('Yes, delete them')
+                    ->deselectRecordsAfterCompletion()
+                    ->action(function (Collection $records) {
+                        $successCount = 0;
+                        $failedCount = 0;
+                        $errors = [];
+
+                        foreach ($records as $record) {
+                            try {
+                                $record->delete();
+                                $successCount++;
+                            } catch (\Exception $e) {
+                                $failedCount++;
+                                $errors[] = "ID {$record->id}: {$e->getMessage()}";
+                                \Illuminate\Support\Facades\Log::error("Bulk delete failed for trade-in request {$record->id}", [
+                                    'error' => $e->getMessage(),
+                                ]);
+                            }
+                        }
+
+                        // Build result notification
+                        if ($failedCount === 0) {
+                            \Filament\Notifications\Notification::make()
+                                ->success()
+                                ->title('Trade-In Requests Deleted')
+                                ->body("{$successCount} trade-in request(s) deleted successfully.")
+                                ->send();
+                        } elseif ($successCount === 0) {
+                            \Filament\Notifications\Notification::make()
+                                ->danger()
+                                ->title('Bulk Delete Failed')
+                                ->body("Failed to delete all {$failedCount} trade-in request(s).\n" . implode("\n", array_slice($errors, 0, 5)))
+                                ->send();
+                        } else {
+                            \Filament\Notifications\Notification::make()
+                                ->warning()
+                                ->title('Partially Deleted')
+                                ->body("{$successCount} deleted, {$failedCount} failed.\n" . implode("\n", array_slice($errors, 0, 5)))
+                                ->send();
+                        }
+
+                        // Redirect to refresh the table
+                        return redirect(request()->header('Referer'));
+                    }),
+            ]);
     }
 }
 
