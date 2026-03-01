@@ -5,7 +5,7 @@ namespace App\Filament\Pages;
 use App\Filament\Widgets\AnalyticsStatsOverview;
 
 use App\Filament\Widgets\MostTradedVariantsWidget;
-use App\Filament\Widgets\TopEndpointsWidget;
+
 use App\Filament\Widgets\TradeInDemandChart;
 use App\Filament\Widgets\TradeInStatusRatioWidget;
 use App\Filament\Widgets\TrafficChart;
@@ -21,7 +21,6 @@ class Dashboard extends BaseDashboard
         return [
             AnalyticsStatsOverview::class,
             TrafficChart::class,
-            TopEndpointsWidget::class,
         ];
     }
 
