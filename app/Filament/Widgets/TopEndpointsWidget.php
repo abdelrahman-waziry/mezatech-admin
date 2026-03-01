@@ -19,7 +19,7 @@ class TopEndpointsWidget extends BaseWidget
         return $table
             ->query(
                 AnalyticsRequest::query()
-                    ->select('endpoint', DB::raw('COUNT(*) as count'), DB::raw('AVG(duration_ms) as avg_duration'))
+                    ->select('endpoint', DB::raw('COUNT(*) as count'), DB::raw('AVG(duration_ms) as avg_duration'), DB::raw('MIN(id) as id'))
                     ->groupBy('endpoint')
                     ->orderByDesc('count')
                     ->limit(10)
@@ -34,7 +34,6 @@ class TopEndpointsWidget extends BaseWidget
                     ->label('Avg Duration (ms)')
                     ->numeric(decimalPlaces: 2),
             ])
-            ->paginated(false)
-            ->recordKey('endpoint');
+            ->paginated(false);
     }
 }
