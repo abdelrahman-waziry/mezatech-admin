@@ -141,12 +141,12 @@ a[x-apple-data-detectors],
                      </tr>
                      
                      <!-- Step 1: Confirm -->
-                     <tr>
+                     <!-- <tr>
                       <td align="left" style="padding:15px 0;Margin:0;border-bottom:1px solid #eeeeee">
                         <h4 style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:16px;font-style:normal;font-weight:bold;line-height:19.2px;color:#333333">1. Confirm the Offer</h4>
                         <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#666666;font-size:14px;margin-top:5px">Click the button below to accept the trade-in offer.</p>
                       </td>
-                     </tr>
+                     </tr> -->
                      
                      <!-- Confirm Button -->
                      <!-- <tr>
