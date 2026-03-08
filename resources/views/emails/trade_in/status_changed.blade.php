@@ -149,18 +149,18 @@ a[x-apple-data-detectors],
                      </tr>
                      
                      <!-- Confirm Button -->
-                     <tr>
+                     <!-- <tr>
                       <td align="center" style="padding:25px 0;Margin:0">
                         <span class="es-button-border" style="border-style:solid;border-color:#28a745;background:#28a745;border-width:0px;display:inline-block;border-radius:6px;width:auto">
                           <a href="{{ config('app.url') }}" class="es-button" target="_blank" style="mso-style-priority:100 !important;text-decoration:none;mso-line-height-rule:exactly;color:#FFFFFF;font-size:18px;border-style:solid;border-color:#28a745;border-width:12px 30px;display:inline-block;background:#28a745;border-radius:6px;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-weight:bold;font-style:normal;line-height:21.6px;width:auto;text-align:center">Confirm Offer</a>
                         </span>
                       </td>
-                     </tr>
+                     </tr> -->
                      
                      <!-- Step 2: Prepare -->
                      <tr>
                       <td align="left" style="padding:15px 0;Margin:0;border-bottom:1px solid #eeeeee">
-                        <h4 style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:16px;font-style:normal;font-weight:bold;line-height:19.2px;color:#333333">2. Prepare Your Device</h4>
+                        <h4 style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:16px;font-style:normal;font-weight:bold;line-height:19.2px;color:#333333">1. Prepare Your Device</h4>
                         <ul style="Margin:10px 0 0 0;padding-left:20px;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:24px;color:#666666;font-size:14px">
                             <li>Back up your data</li>
                             <li>Remove SIM cards</li>
@@ -173,7 +173,7 @@ a[x-apple-data-detectors],
                      <!-- Step 3: Drop Off -->
                      <tr>
                       <td align="left" style="padding:15px 0;Margin:0;border-bottom:1px solid #eeeeee">
-                        <h4 style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:16px;font-style:normal;font-weight:bold;line-height:19.2px;color:#333333">3. Drop Off or Pickup</h4>
+                        <h4 style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:16px;font-style:normal;font-weight:bold;line-height:19.2px;color:#333333">2. Drop Off or Pickup</h4>
                         <ul style="Margin:10px 0 0 0;padding-left:20px;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:24px;color:#666666;font-size:14px">
                             <li>Visit any Black Mint location</li>
                             <li>Or schedule a convenient pickup</li>
@@ -184,7 +184,7 @@ a[x-apple-data-detectors],
                      <!-- Step 4: Inspection -->
                      <tr>
                       <td align="left" style="padding:15px 0;Margin:0;border-bottom:1px solid #eeeeee">
-                        <h4 style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:16px;font-style:normal;font-weight:bold;line-height:19.2px;color:#333333">4. Final Inspection</h4>
+                        <h4 style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:16px;font-style:normal;font-weight:bold;line-height:19.2px;color:#333333">3. Final Inspection</h4>
                         <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#666666;font-size:14px;margin-top:5px">Our experts will verify the device condition.</p>
                       </td>
                      </tr>
@@ -192,7 +192,7 @@ a[x-apple-data-detectors],
                      <!-- Step 5: Get Paid -->
                      <tr>
                       <td align="left" style="padding:15px 0;Margin:0;padding-bottom:30px">
-                        <h4 style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:16px;font-style:normal;font-weight:bold;line-height:19.2px;color:#333333">5. Get Paid</h4>
+                        <h4 style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:16px;font-style:normal;font-weight:bold;line-height:19.2px;color:#333333">4. Get Paid</h4>
                         <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#666666;font-size:14px;margin-top:5px">Receive payment as agreed or exchange a Minted device.</p>
                       </td>
                      </tr>

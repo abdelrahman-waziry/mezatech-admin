@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-
+use App\Mail\TradeInStatusChanged;
 use App\Models\TradeInRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class TradeInRequestController extends Controller
 {
@@ -110,6 +111,16 @@ class TradeInRequestController extends Controller
         if (isset($validated['customerAnswers'])) $updateData['customer_answers'] = $validated['customerAnswers'];
 
         $tradeInRequest->update($updateData);
+
+        // Send acceptance email when status is changed to 'accepted'
+        if (isset($updateData['status']) && $updateData['status'] === 'accepted') {
+            try {
+                Mail::to($tradeInRequest->customer_email)
+                    ->send(new TradeInStatusChanged($tradeInRequest));
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Failed to send trade-in acceptance email: ' . $e->getMessage());
+            }
+        }
 
         return response()->json($this->formatRequest($tradeInRequest));
     }
