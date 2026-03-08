@@ -51,7 +51,7 @@ class AnalyticsEventResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('quoted_price')
-                    ->money(currency: 'SAR') // Assuming SAR or similar, adjustable
+                    ->money(currency: 'EGP') // Assuming SAR or similar, adjustable
                     ->sortable()
                     ->toggleable(),
             ])
