@@ -59,6 +59,7 @@ class TradeInRequestsTable
                         'pending' => 'warning',
                         'accepted' => 'success',
                         'rejected' => 'danger',
+                        'confirmed' => 'info',
                         default => 'gray',
                     }),
                 TextColumn::make('created_at')
@@ -66,7 +67,15 @@ class TradeInRequestsTable
                     ->dateTime()
                     ->sortable(),
             ])
-            ->filters([])
+            ->filters([
+                \Filament\Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'accepted' => 'Accepted',
+                        'rejected' => 'Rejected',
+                        'confirmed' => 'Confirmed',
+                    ]),
+            ])
             ->actions([
                 \Filament\Actions\ActionGroup::make([
                     \Filament\Actions\EditAction::make(),

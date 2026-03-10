@@ -30,7 +30,8 @@ class TradeInStatusRatioWidget extends ChartWidget
         $accepted = $statuses['accepted'] ?? 0;
         $rejected = $statuses['rejected'] ?? 0;
         $pending = $statuses['pending'] ?? 0;
-        $total = $accepted + $rejected + $pending;
+        $confirmed = $statuses['confirmed'] ?? 0;
+        $total = $accepted + $rejected + $pending + $confirmed;
 
         // Build description with percentages
         if ($total > 0) {
@@ -42,15 +43,17 @@ class TradeInStatusRatioWidget extends ChartWidget
                 "Accepted ({$accepted})",
                 "Rejected ({$rejected})",
                 "Pending ({$pending})",
+                "Confirmed ({$confirmed})",
             ],
             'datasets' => [
                 [
                     'label' => 'Trade-In Requests',
-                    'data' => [$accepted, $rejected, $pending],
+                    'data' => [$accepted, $rejected, $pending, $confirmed],
                     'backgroundColor' => [
                         '#22c55e', // green for accepted
                         '#ef4444', // red for rejected
                         '#f59e0b', // amber for pending
+                        '#3b82f6', // blue for confirmed
                     ],
                     'borderColor' => '#ffffff',
                     'borderWidth' => 2,

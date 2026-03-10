@@ -72,6 +72,7 @@ class TradeInRequestForm
                                 'pending' => 'Pending',
                                 'accepted' => 'Accepted',
                                 'rejected' => 'Rejected',
+                                'confirmed' => 'Confirmed',
                             ])
                             ->required(),
                         \Filament\Forms\Components\Textarea::make('admin_comment')
