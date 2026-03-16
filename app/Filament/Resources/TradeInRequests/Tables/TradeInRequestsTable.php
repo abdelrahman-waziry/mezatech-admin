@@ -60,6 +60,7 @@ class TradeInRequestsTable
                         'accepted' => 'success',
                         'rejected' => 'danger',
                         'confirmed' => 'info',
+                        'closed' => 'gray',
                         default => 'gray',
                     }),
                 TextColumn::make('created_at')
@@ -74,6 +75,7 @@ class TradeInRequestsTable
                         'accepted' => 'Accepted',
                         'rejected' => 'Rejected',
                         'confirmed' => 'Confirmed',
+                        'closed' => 'Closed',
                     ]),
             ])
             ->actions([

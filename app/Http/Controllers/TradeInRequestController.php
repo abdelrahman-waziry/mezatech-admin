@@ -51,7 +51,7 @@ class TradeInRequestController extends Controller
             'customerName' => 'required|string',
             'customerEmail' => 'required|email',
             'customerPhone' => 'required|string',
-            'status' => 'required|in:pending,accepted,rejected,confirmed',
+            'status' => 'required|in:pending,accepted,rejected,confirmed,closed',
             'selectedOptions' => 'sometimes|array',
             'customerAnswers' => 'sometimes|array',
         ]);
@@ -94,7 +94,7 @@ class TradeInRequestController extends Controller
             'customerName' => 'sometimes|string',
             'customerEmail' => 'sometimes|email',
             'customerPhone' => 'sometimes|string',
-            'status' => 'sometimes|in:pending,accepted,rejected,confirmed',
+            'status' => 'sometimes|in:pending,accepted,rejected,confirmed,closed',
             'selectedOptions' => 'sometimes|array',
             'customerAnswers' => 'sometimes|array',
         ]);
