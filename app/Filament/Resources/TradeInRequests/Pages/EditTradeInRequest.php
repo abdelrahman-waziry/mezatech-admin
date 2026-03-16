@@ -14,7 +14,7 @@ class EditTradeInRequest extends EditRecord
     {
         $record = $this->getRecord();
         
-        if ($record->wasChanged('status')) {
+        if ($record->wasChanged('status') && $record->status !== 'closed') {
             try {
                 \Illuminate\Support\Facades\Mail::to($record->customer_email)
                     ->send(new \App\Mail\TradeInStatusChanged($record));
