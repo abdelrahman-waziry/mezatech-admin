@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             ShieldSeeder::class,
             UserRoleSeeder::class,
             TradeInJourneySeeder::class,
+            FixtechPricingSeeder::class,
         ]);
     }
 }
