@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\Cache;
+use Livewire\Attributes\Computed;
 
 class FixtechSyncProgress extends Widget
 {
@@ -13,7 +14,8 @@ class FixtechSyncProgress extends Widget
 
     protected int | string | array $columnSpan = 'full';
 
-    public function getProgress()
+    #[Computed]
+    public function progress()
     {
         return Cache::get('fixtech_sync_progress');
     }

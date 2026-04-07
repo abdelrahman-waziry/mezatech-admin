@@ -1,8 +1,6 @@
 <x-filament-widgets::widget>
-    @php $progress = $this->getProgress(); @endphp
-    
     <div wire:poll.5s>
-        @if($progress)
+        @if($this->progress)
             <x-filament::section icon="heroicon-o-arrow-path" icon-color="primary" class="animate-pulse shadow-lg ring-1 ring-primary-500/20">
                 <x-slot name="heading">
                     <div class="flex justify-between items-center w-full">
@@ -14,13 +12,13 @@
                              </div>
                              <span class="text-sm font-semibold tracking-tight text-gray-900 dark:text-gray-100 uppercase">FixTech Sync In Progress</span>
                         </div>
-                        <span class="text-sm font-bold font-mono text-primary-600 dark:text-primary-400 bg-primary-100 dark:bg-primary-900/30 px-2 py-0.5 rounded shadow-inner">{{ $progress['percent'] }}%</span>
+                        <span class="text-sm font-bold font-mono text-primary-600 dark:text-primary-400 bg-primary-100 dark:bg-primary-900/30 px-2 py-0.5 rounded shadow-inner">{{ $this->progress['percent'] }}%</span>
                     </div>
                 </x-slot>
 
                 <div class="space-y-4 py-1">
                     <div class="relative w-full bg-gray-200 rounded-full h-3 dark:bg-gray-800 border border-gray-100/10 shadow-inner overflow-hidden">
-                        <div class="bg-primary-600 h-3 rounded-full transition-all duration-1000 ease-in-out shadow-[0_0_12px_rgba(59,130,246,0.6)]" style="width: {{ $progress['percent'] }}%">
+                        <div class="bg-primary-600 h-3 rounded-full transition-all duration-1000 ease-in-out shadow-[0_0_12px_rgba(59,130,246,0.6)]" style="width: {{ $this->progress['percent'] }}%">
                              <div class="w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer scale-x-150"></div>
                         </div>
                     </div>
@@ -31,9 +29,9 @@
                               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
                               <span class="relative inline-flex rounded-full h-2 w-2 bg-primary-500"></span>
                             </span>
-                            {{ $progress['status'] }}
+                            {{ $this->progress['status'] }}
                         </div>
-                        <p class="font-normal not-italic opacity-60">Heartbeat: {{ \Carbon\Carbon::parse($progress['updated_at'])->diffForHumans() }}</p>
+                        <p class="font-normal not-italic opacity-60">Heartbeat: {{ \Carbon\Carbon::parse($this->progress['updated_at'])->diffForHumans() }}</p>
                     </div>
                 </div>
             </x-filament::section>
