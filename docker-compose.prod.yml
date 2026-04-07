@@ -16,6 +16,8 @@ services:
       DB_DATABASE: "${DB_DATABASE:-laravel}"
       DB_USERNAME: "${DB_USERNAME:-laravel}"
       DB_PASSWORD: "${DB_PASSWORD:-secret}"
+    volumes:
+      - shared-storage:/var/www/html/storage
     depends_on:
       - db
     networks:
@@ -38,6 +40,8 @@ services:
       DB_DATABASE: "${DB_DATABASE:-laravel}"
       DB_USERNAME: "${DB_USERNAME:-laravel}"
       DB_PASSWORD: "${DB_PASSWORD:-secret}"
+    volumes:
+      - shared-storage:/var/www/html/storage
     depends_on:
       - db
       - app
@@ -82,3 +86,4 @@ volumes:
   db-data:
   caddy_data:
   caddy_config:
+  shared-storage:
