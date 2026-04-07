@@ -41,6 +41,13 @@ php artisan view:clear
 echo "Running database migrations..."
 APP_URL=http://localhost php artisan migrate --force
 
-# Start Apache
-echo "Starting Apache..."
-exec apache2-foreground
+# Export execution based on provided arguments command
+echo "Starting container process..."
+
+if [ $# -gt 0 ]; then
+    exec "$@"
+else
+    # Start Apache by default
+    echo "Starting Apache..."
+    exec apache2-foreground
+fi
