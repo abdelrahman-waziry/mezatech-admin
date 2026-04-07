@@ -65,10 +65,13 @@
         .pn-card-name { font-size: 14px; font-weight: 700; line-height: 1.4; color: #111827; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; word-break: break-word; }
         .fi-dark .pn-card-name { color: #f9fafb; }
         .pn-card-desc { font-size: 12px; color: #6b7280; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
-        .pn-card-price { text-align: right; flex-shrink: 0; }
-        .pn-card-price span { font-size: 1.5rem; font-weight: 800; color: #00a801; letter-spacing: -.02em; }
-        .fi-dark .pn-card-price span { color: #00FB02; }
-        .pn-card-price p { font-size: 10px; color: #9ca3af; text-transform: uppercase; letter-spacing: .06em; }
+        .pn-card-price { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-start; }
+        .pn-price-old { font-size: 13px; color: #9ca3af; text-decoration: line-through; font-weight: 600; margin-bottom: 2px; }
+        .fi-dark .pn-price-old { color: #6b7280; }
+        .pn-price-main { display: flex; align-items: baseline; gap: 4px; }
+        .pn-price-main span { font-size: 1.5rem; font-weight: 800; color: #00a801; letter-spacing: -.02em; line-height: 1; }
+        .fi-dark .pn-price-main span { color: #00FB02; }
+        .pn-price-main small { font-size: 11px; color: #9ca3af; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
 
         .pn-card-tags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .pn-tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; background: #f3f4f6; color: #374151; }
@@ -194,10 +197,15 @@
                                 @endif
                             </div>
                             <div class="pn-card-price">
-                                <span>{{ number_format($item->price_after_discount, 0) }}</span>
-                                <p>EGP</p>
                                 @if($hasDiscount)
-                                    <div class="pn-discount">-{{ $item->discount }}%</div>
+                                    <div class="pn-price-old">{{ number_format($item->price, 0) }} EGP</div>
+                                @endif
+                                <div class="pn-price-main">
+                                    <span>{{ number_format($item->price_after_discount, 0) }}</span>
+                                    <small>EGP</small>
+                                </div>
+                                @if($hasDiscount)
+                                    <div class="pn-discount">-{{ floatval($item->discount) }}%</div>
                                 @endif
                             </div>
                         </div>
