@@ -30,19 +30,7 @@ class AdminController extends Controller
         }
 
         // Generate token
-        // Note: You may need to install Laravel Sanctum (composer require laravel/sanctum)
-        // or use your preferred JWT package. For now, this is a placeholder.
-        // If using Sanctum, uncomment the line below:
-        // $token = $user->createToken('admin-token')->plainTextToken;
-        
-        // Placeholder token generation - replace with your actual token generation logic
-        $token = base64_encode(json_encode([
-            'name' => $user->name,
-            'email' => $user->email,
-            'sub' => $user->email,
-            'iat' => now()->timestamp,
-            'exp' => now()->addDays(1)->timestamp,
-        ]));
+        $token = $user->createToken('admin-token')->plainTextToken;
 
         return response()->json([
             'message' => 'Login successful',
