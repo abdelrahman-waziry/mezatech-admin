@@ -24,6 +24,8 @@ class RepairPriceResource extends Resource
 
     protected static ?string $navigationLabel = 'Repair Prices';
 
+    protected static ?int $navigationSort = 1;
+
     protected static ?string $recordTitleAttribute = 'model';
 
     public static function form(Schema $schema): Schema

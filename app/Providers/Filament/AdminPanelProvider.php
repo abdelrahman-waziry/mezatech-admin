@@ -65,6 +65,8 @@ class AdminPanelProvider extends PanelProvider
             ->navigationGroups([
                 'Trade-in',
                 'Pricing Management',
+                'FixTech Pricing',
+                'FixTech Configuration',
                 'Analytics',
                 'Filament Shield',
             ]);
