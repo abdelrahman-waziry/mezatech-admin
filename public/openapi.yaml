@@ -3,7 +3,7 @@ info:
   title: Mezatech Backend API
   version: 1.0.0
 servers:
-  - url: https://mezatech-dashboard.test/api
+  - url: https://admin.mezatech.net/api
 tags:
   - name: Products
     description: API operations related to products
@@ -232,6 +232,8 @@ paths:
         - Products
       summary: Get all products
       operationId: getProducts
+      security:
+        - bearerAuth: []
       parameters:
         - name: name
           in: query
@@ -286,6 +288,8 @@ paths:
         - Products
       summary: Create a new product
       operationId: createProduct
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -306,6 +310,8 @@ paths:
         - Products
       summary: Get a product by ID
       operationId: getProduct
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -337,6 +343,8 @@ paths:
         - Products
       summary: Update a product
       operationId: updateProduct
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -364,6 +372,8 @@ paths:
         - Products
       summary: Delete a product
       operationId: deleteProduct
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -387,6 +397,8 @@ paths:
         - Products
       summary: Calculate product price
       operationId: calculateProductPrice
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -413,6 +425,8 @@ paths:
         - Brands
       summary: Get all brands
       operationId: getBrands
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: List of brands
@@ -431,6 +445,8 @@ paths:
         - Brands
       summary: Create a new brand
       operationId: createBrand
+      security: 
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -451,6 +467,8 @@ paths:
         - Brands
       summary: Get a brand by ID
       operationId: getBrand
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -476,6 +494,8 @@ paths:
         - Brands
       summary: Update a brand
       operationId: updateBrand
+      security: 
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -503,6 +523,8 @@ paths:
         - Brands
       summary: Delete a brand
       operationId: deleteBrand
+      security: 
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -526,6 +548,8 @@ paths:
         - Parts
       summary: Get all parts
       operationId: getParts
+      security: 
+        - bearerAuth: []
       parameters:
         - name: productId
           in: query
@@ -551,6 +575,8 @@ paths:
         - Parts
       summary: Create a new part
       operationId: createPart
+      security: 
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -571,6 +597,8 @@ paths:
         - Parts
       summary: Get a part by ID
       operationId: getPart
+      security: 
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -596,6 +624,8 @@ paths:
         - Parts
       summary: Update a part
       operationId: updatePart
+      security: 
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -623,6 +653,8 @@ paths:
         - Parts
       summary: Delete a part
       operationId: deletePart
+      security: 
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -646,6 +678,8 @@ paths:
         - Tags
       summary: Get all tags
       operationId: getTags
+      security: 
+        - bearerAuth: []
       responses:
         '200':
           description: List of tags
@@ -664,6 +698,8 @@ paths:
         - Tags
       summary: Create a new tag
       operationId: createTag
+      security: 
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -684,6 +720,8 @@ paths:
         - Tags
       summary: Get a tag by ID
       operationId: getTag
+      security: 
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -709,6 +747,8 @@ paths:
         - Tags
       summary: Update a tag
       operationId: updateTag
+      security: 
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -736,6 +776,8 @@ paths:
         - Tags
       summary: Delete a tag
       operationId: deleteTag
+      security: 
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -759,6 +801,8 @@ paths:
         - Variants
       summary: Get all variants
       operationId: getVariants
+      security: 
+        - bearerAuth: []
       parameters:
         - name: productId
           in: query
@@ -784,6 +828,8 @@ paths:
         - Variants
       summary: Create a new variant
       operationId: createVariant
+      security: 
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -804,6 +850,8 @@ paths:
         - Variants
       summary: Get a variant by ID
       operationId: getVariant
+      security: 
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -829,6 +877,8 @@ paths:
         - Variants
       summary: Update a variant
       operationId: updateVariant
+      security: 
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -856,6 +906,8 @@ paths:
         - Variants
       summary: Delete a variant
       operationId: deleteVariant
+      security: 
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -878,6 +930,8 @@ paths:
         - Features
       summary: Get all features
       operationId: getFeatures
+      security: 
+        - bearerAuth: []
       responses:
         '200':
           description: List of features
@@ -916,6 +970,8 @@ paths:
         - Features
       summary: Get a feature by ID
       operationId: getFeature
+      security: 
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -941,6 +997,8 @@ paths:
         - Features
       summary: Update a feature
       operationId: updateFeature
+      security: 
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -968,6 +1026,8 @@ paths:
         - Features
       summary: Delete a feature
       operationId: deleteFeature
+      security: 
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -991,6 +1051,8 @@ paths:
         - Customers
       summary: Get all customers
       operationId: getCustomers
+      security: 
+        - bearerAuth: []
       responses:
         '200':
           description: List of customers
@@ -1009,6 +1071,8 @@ paths:
         - Customers
       summary: Create a new customer
       operationId: createCustomer
+      security: 
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -1029,6 +1093,8 @@ paths:
         - Customers
       summary: Get a customer by ID
       operationId: getCustomer
+      security: 
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -1054,6 +1120,8 @@ paths:
         - Customers
       summary: Update a customer
       operationId: updateCustomer
+      security: 
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
