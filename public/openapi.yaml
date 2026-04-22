@@ -25,6 +25,7 @@ tags:
 paths:
   /v1/analytics/requests:
     post:
+      security: []
       tags:
         - Analytics
       summary: Ingest an API request log
@@ -43,6 +44,7 @@ paths:
 
   /v1/analytics/events:
     post:
+      security: []
       tags:
         - Analytics
       summary: Ingest a business event
@@ -63,9 +65,7 @@ paths:
     get:
       tags:
         - Analytics
-      summary: Get API performance metrics
-      security:
-        - bearerAuth: []
+      summary: Get API performance metrics
       parameters:
         - name: from
           in: query
@@ -91,9 +91,7 @@ paths:
     get:
       tags:
         - Analytics
-      summary: Get traffic volume over time
-      security:
-        - bearerAuth: []
+      summary: Get traffic volume over time
       parameters:
         - name: interval
           in: query
@@ -109,9 +107,7 @@ paths:
     get:
       tags:
         - Analytics
-      summary: Get most used endpoints
-      security:
-        - bearerAuth: []
+      summary: Get most used endpoints
       parameters:
         - name: limit
           in: query
@@ -126,9 +122,7 @@ paths:
     get:
       tags:
         - Analytics
-      summary: Get trade-in demand by device
-      security:
-        - bearerAuth: []
+      summary: Get trade-in demand by device
       parameters:
         - name: group_by
           in: query
@@ -145,9 +139,7 @@ paths:
       tags:
         - TradeInRequests
       summary: Get all trade-in requests
-      operationId: getTradeInRequests
-      security: 
-        - bearerAuth: []
+      operationId: getTradeInRequests
       responses:
         '200':
           description: List of trade-in requests
@@ -167,9 +159,7 @@ paths:
       summary: Create a new trade-in request
       operationId: createTradeInRequest
       requestBody:
-        required: true
-        security: 
-        - bearerAuth: []
+        required: true
         content:
           application/json:
             schema:
@@ -187,9 +177,7 @@ paths:
       tags:
         - TradeInRequests
       summary: Update a trade-in request
-      operationId: updateTradeInRequest
-      security: 
-        - bearerAuth: []
+      operationId: updateTradeInRequest
       parameters:
         - name: id
           in: path
@@ -216,9 +204,7 @@ paths:
       tags:
         - TradeInRequests
       summary: Delete a trade-in request
-      operationId: deleteTradeInRequest
-      security: 
-        - bearerAuth: []
+      operationId: deleteTradeInRequest
       parameters:
         - name: id
           in: path
@@ -241,9 +227,7 @@ paths:
       tags:
         - Products
       summary: Get all products
-      operationId: getProducts
-      security:
-        - bearerAuth: []
+      operationId: getProducts
       parameters:
         - name: name
           in: query
@@ -297,9 +281,7 @@ paths:
       tags:
         - Products
       summary: Create a new product
-      operationId: createProduct
-      security:
-        - bearerAuth: []
+      operationId: createProduct
       requestBody:
         required: true
         content:
@@ -319,9 +301,7 @@ paths:
       tags:
         - Products
       summary: Get a product by ID
-      operationId: getProduct
-      security:
-        - bearerAuth: []
+      operationId: getProduct
       parameters:
         - name: id
           in: path
@@ -352,9 +332,7 @@ paths:
       tags:
         - Products
       summary: Update a product
-      operationId: updateProduct
-      security:
-        - bearerAuth: []
+      operationId: updateProduct
       parameters:
         - name: id
           in: path
@@ -381,9 +359,7 @@ paths:
       tags:
         - Products
       summary: Delete a product
-      operationId: deleteProduct
-      security:
-        - bearerAuth: []
+      operationId: deleteProduct
       parameters:
         - name: id
           in: path
@@ -403,12 +379,11 @@ paths:
 
   /v1/products/calculate:
     post:
+      security: []
       tags:
         - Products
       summary: Calculate product price
-      operationId: calculateProductPrice
-      security:
-        - bearerAuth: []
+      operationId: calculateProductPrice
       requestBody:
         required: true
         content:
@@ -434,9 +409,7 @@ paths:
       tags:
         - Brands
       summary: Get all brands
-      operationId: getBrands
-      security:
-        - bearerAuth: []
+      operationId: getBrands
       responses:
         '200':
           description: List of brands
@@ -454,9 +427,7 @@ paths:
       tags:
         - Brands
       summary: Create a new brand
-      operationId: createBrand
-      security: 
-        - bearerAuth: []
+      operationId: createBrand
       requestBody:
         required: true
         content:
@@ -476,9 +447,7 @@ paths:
       tags:
         - Brands
       summary: Get a brand by ID
-      operationId: getBrand
-      security:
-        - bearerAuth: []
+      operationId: getBrand
       parameters:
         - name: id
           in: path
@@ -503,9 +472,7 @@ paths:
       tags:
         - Brands
       summary: Update a brand
-      operationId: updateBrand
-      security: 
-        - bearerAuth: []
+      operationId: updateBrand
       parameters:
         - name: id
           in: path
@@ -532,9 +499,7 @@ paths:
       tags:
         - Brands
       summary: Delete a brand
-      operationId: deleteBrand
-      security: 
-        - bearerAuth: []
+      operationId: deleteBrand
       parameters:
         - name: id
           in: path
@@ -557,9 +522,7 @@ paths:
       tags:
         - Parts
       summary: Get all parts
-      operationId: getParts
-      security: 
-        - bearerAuth: []
+      operationId: getParts
       parameters:
         - name: productId
           in: query
@@ -584,9 +547,7 @@ paths:
       tags:
         - Parts
       summary: Create a new part
-      operationId: createPart
-      security: 
-        - bearerAuth: []
+      operationId: createPart
       requestBody:
         required: true
         content:
@@ -606,9 +567,7 @@ paths:
       tags:
         - Parts
       summary: Get a part by ID
-      operationId: getPart
-      security: 
-        - bearerAuth: []
+      operationId: getPart
       parameters:
         - name: id
           in: path
@@ -633,9 +592,7 @@ paths:
       tags:
         - Parts
       summary: Update a part
-      operationId: updatePart
-      security: 
-        - bearerAuth: []
+      operationId: updatePart
       parameters:
         - name: id
           in: path
@@ -662,9 +619,7 @@ paths:
       tags:
         - Parts
       summary: Delete a part
-      operationId: deletePart
-      security: 
-        - bearerAuth: []
+      operationId: deletePart
       parameters:
         - name: id
           in: path
@@ -687,9 +642,7 @@ paths:
       tags:
         - Tags
       summary: Get all tags
-      operationId: getTags
-      security: 
-        - bearerAuth: []
+      operationId: getTags
       responses:
         '200':
           description: List of tags
@@ -707,9 +660,7 @@ paths:
       tags:
         - Tags
       summary: Create a new tag
-      operationId: createTag
-      security: 
-        - bearerAuth: []
+      operationId: createTag
       requestBody:
         required: true
         content:
@@ -729,9 +680,7 @@ paths:
       tags:
         - Tags
       summary: Get a tag by ID
-      operationId: getTag
-      security: 
-        - bearerAuth: []
+      operationId: getTag
       parameters:
         - name: id
           in: path
@@ -756,9 +705,7 @@ paths:
       tags:
         - Tags
       summary: Update a tag
-      operationId: updateTag
-      security: 
-        - bearerAuth: []
+      operationId: updateTag
       parameters:
         - name: id
           in: path
@@ -785,9 +732,7 @@ paths:
       tags:
         - Tags
       summary: Delete a tag
-      operationId: deleteTag
-      security: 
-        - bearerAuth: []
+      operationId: deleteTag
       parameters:
         - name: id
           in: path
@@ -810,9 +755,7 @@ paths:
       tags:
         - Variants
       summary: Get all variants
-      operationId: getVariants
-      security: 
-        - bearerAuth: []
+      operationId: getVariants
       parameters:
         - name: productId
           in: query
@@ -837,9 +780,7 @@ paths:
       tags:
         - Variants
       summary: Create a new variant
-      operationId: createVariant
-      security: 
-        - bearerAuth: []
+      operationId: createVariant
       requestBody:
         required: true
         content:
@@ -859,9 +800,7 @@ paths:
       tags:
         - Variants
       summary: Get a variant by ID
-      operationId: getVariant
-      security: 
-        - bearerAuth: []
+      operationId: getVariant
       parameters:
         - name: id
           in: path
@@ -886,9 +825,7 @@ paths:
       tags:
         - Variants
       summary: Update a variant
-      operationId: updateVariant
-      security: 
-        - bearerAuth: []
+      operationId: updateVariant
       parameters:
         - name: id
           in: path
@@ -915,9 +852,7 @@ paths:
       tags:
         - Variants
       summary: Delete a variant
-      operationId: deleteVariant
-      security: 
-        - bearerAuth: []
+      operationId: deleteVariant
       parameters:
         - name: id
           in: path
@@ -939,9 +874,7 @@ paths:
       tags:
         - Features
       summary: Get all features
-      operationId: getFeatures
-      security: 
-        - bearerAuth: []
+      operationId: getFeatures
       responses:
         '200':
           description: List of features
@@ -979,9 +912,7 @@ paths:
       tags:
         - Features
       summary: Get a feature by ID
-      operationId: getFeature
-      security: 
-        - bearerAuth: []
+      operationId: getFeature
       parameters:
         - name: id
           in: path
@@ -1006,9 +937,7 @@ paths:
       tags:
         - Features
       summary: Update a feature
-      operationId: updateFeature
-      security: 
-        - bearerAuth: []
+      operationId: updateFeature
       parameters:
         - name: id
           in: path
@@ -1035,9 +964,7 @@ paths:
       tags:
         - Features
       summary: Delete a feature
-      operationId: deleteFeature
-      security: 
-        - bearerAuth: []
+      operationId: deleteFeature
       parameters:
         - name: id
           in: path
@@ -1060,9 +987,7 @@ paths:
       tags:
         - Customers
       summary: Get all customers
-      operationId: getCustomers
-      security: 
-        - bearerAuth: []
+      operationId: getCustomers
       responses:
         '200':
           description: List of customers
@@ -1080,9 +1005,7 @@ paths:
       tags:
         - Customers
       summary: Create a new customer
-      operationId: createCustomer
-      security: 
-        - bearerAuth: []
+      operationId: createCustomer
       requestBody:
         required: true
         content:
@@ -1102,9 +1025,7 @@ paths:
       tags:
         - Customers
       summary: Get a customer by ID
-      operationId: getCustomer
-      security: 
-        - bearerAuth: []
+      operationId: getCustomer
       parameters:
         - name: id
           in: path
@@ -1129,9 +1050,7 @@ paths:
       tags:
         - Customers
       summary: Update a customer
-      operationId: updateCustomer
-      security: 
-        - bearerAuth: []
+      operationId: updateCustomer
       parameters:
         - name: id
           in: path
@@ -1178,6 +1097,7 @@ paths:
 
   /v1/admin/login:
    post:
+      security: []
       tags:
         - Login
       summary: login
@@ -1207,6 +1127,7 @@ paths:
 
   /v1/files:
     get:
+      security: []
       tags:
         - Files
       summary: Serve a file
@@ -1299,9 +1220,7 @@ paths:
     get:
       tags:
         - Repairs
-      summary: Get all repair categories
-      security: 
-        - bearerAuth: []
+      summary: Get all repair categories
       responses:
         '200':
           description: OK
@@ -1309,9 +1228,7 @@ paths:
     get:
       tags:
         - Repairs
-      summary: Get a repair category
-      security: 
-        - bearerAuth: []
+      summary: Get a repair category
       parameters:
         - name: id
           in: path
@@ -1325,9 +1242,7 @@ paths:
     get:
       tags:
         - Repairs
-      summary: Get all repair subcategories
-      security: 
-        - bearerAuth: []
+      summary: Get all repair subcategories
       responses:
         '200':
           description: OK
@@ -1335,9 +1250,7 @@ paths:
     get:
       tags:
         - Repairs
-      summary: Get a repair subcategory
-      security: 
-        - bearerAuth: []
+      summary: Get a repair subcategory
       parameters:
         - name: id
           in: path
@@ -1351,9 +1264,7 @@ paths:
     get:
       tags:
         - Repairs
-      summary: Get all repair prices
-      security: 
-        - bearerAuth: []
+      summary: Get all repair prices
       responses:
         '200':
           description: OK
@@ -1361,9 +1272,7 @@ paths:
     get:
       tags:
         - Repairs
-      summary: Get a repair price
-      security: 
-        - bearerAuth: []
+      summary: Get a repair price
       parameters:
         - name: id
           in: path
@@ -1377,9 +1286,7 @@ paths:
     get:
       tags:
         - Accessories
-      summary: Get all accessory categories
-      security: 
-        - bearerAuth: []
+      summary: Get all accessory categories
       responses:
         '200':
           description: OK
@@ -1387,9 +1294,7 @@ paths:
     get:
       tags:
         - Accessories
-      summary: Get an accessory category
-      security: 
-        - bearerAuth: []
+      summary: Get an accessory category
       parameters:
         - name: id
           in: path
@@ -1403,9 +1308,7 @@ paths:
     get:
       tags:
         - Accessories
-      summary: Get all accessories
-      security: 
-        - bearerAuth: []
+      summary: Get all accessories
       responses:
         '200':
           description: OK
@@ -1413,9 +1316,7 @@ paths:
     get:
       tags:
         - Accessories
-      summary: Get an accessory
-      security: 
-        - bearerAuth: []
+      summary: Get an accessory
       parameters:
         - name: id
           in: path
