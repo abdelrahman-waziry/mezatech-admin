@@ -41,6 +41,17 @@ Route::middleware('api')->prefix('v1')->group(function () {
         Route::post('events', [\App\Http\Controllers\Api\AnalyticsIngestionController::class, 'storeEvent']);
     });
 
+    // Protected Catalog Routes (Repairs & Accessories)
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::apiResource('repair-categories', \App\Http\Controllers\Api\RepairCategoryController::class)->only(['index', 'show']);
+        Route::apiResource('repair-subcategories', \App\Http\Controllers\Api\RepairSubcategoryController::class)->only(['index', 'show']);
+        Route::apiResource('repair-prices', \App\Http\Controllers\Api\RepairPriceController::class)->only(['index', 'show']);
+        
+        Route::apiResource('accessory-categories', \App\Http\Controllers\Api\AccessoryCategoryController::class)->only(['index', 'show']);
+        Route::apiResource('accessories', \App\Http\Controllers\Api\AccessoryController::class)->only(['index', 'show']);
+    });
+
+
     // Trade-in Request Routes (Protected)
     Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('trade-in-requests', \App\Http\Controllers\TradeInRequestController::class);

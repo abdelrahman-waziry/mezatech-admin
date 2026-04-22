@@ -44,7 +44,6 @@ class AdminController extends Controller
             'message' => 'Login successful',
             'token' => $token,
             'user' => [
-                'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
             ],

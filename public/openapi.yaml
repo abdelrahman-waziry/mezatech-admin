@@ -144,6 +144,8 @@ paths:
         - TradeInRequests
       summary: Get all trade-in requests
       operationId: getTradeInRequests
+      security: 
+        - bearerAuth: []
       responses:
         '200':
           description: List of trade-in requests
@@ -164,6 +166,8 @@ paths:
       operationId: createTradeInRequest
       requestBody:
         required: true
+        security: 
+        - bearerAuth: []
         content:
           application/json:
             schema:
@@ -182,6 +186,8 @@ paths:
         - TradeInRequests
       summary: Update a trade-in request
       operationId: updateTradeInRequest
+      security: 
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -209,6 +215,8 @@ paths:
         - TradeInRequests
       summary: Delete a trade-in request
       operationId: deleteTradeInRequest
+      security: 
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -1284,6 +1292,137 @@ paths:
           description: Unauthorized
         '403':
           description: Forbidden
+
+  /v1/repair-categories:
+    get:
+      tags:
+        - Repairs
+      summary: Get all repair categories
+      security: 
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+  /v1/repair-categories/{id}:
+    get:
+      tags:
+        - Repairs
+      summary: Get a repair category
+      security: 
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+  /v1/repair-subcategories:
+    get:
+      tags:
+        - Repairs
+      summary: Get all repair subcategories
+      security: 
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+  /v1/repair-subcategories/{id}:
+    get:
+      tags:
+        - Repairs
+      summary: Get a repair subcategory
+      security: 
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+  /v1/repair-prices:
+    get:
+      tags:
+        - Repairs
+      summary: Get all repair prices
+      security: 
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+  /v1/repair-prices/{id}:
+    get:
+      tags:
+        - Repairs
+      summary: Get a repair price
+      security: 
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+  /v1/accessory-categories:
+    get:
+      tags:
+        - Accessories
+      summary: Get all accessory categories
+      security: 
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+  /v1/accessory-categories/{id}:
+    get:
+      tags:
+        - Accessories
+      summary: Get an accessory category
+      security: 
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+  /v1/accessories:
+    get:
+      tags:
+        - Accessories
+      summary: Get all accessories
+      security: 
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+  /v1/accessories/{id}:
+    get:
+      tags:
+        - Accessories
+      summary: Get an accessory
+      security: 
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
 
 components:
   schemas:
