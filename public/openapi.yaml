@@ -4,6 +4,8 @@ info:
   version: 1.0.0
 servers:
   - url: https://admin.mezatech.net/api
+security:
+  - bearerAuth: []
 tags:
   - name: Products
     description: API operations related to products
@@ -2050,3 +2052,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TradeInRequestDTO'
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
