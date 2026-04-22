@@ -29,8 +29,16 @@ class AdminController extends Controller
             ]);
         }
 
-        // Generate token
-        $token = $user->createToken('admin-token')->plainTextToken;
+        try {
+            // Generate token
+            $token = $user->createToken('admin-token')->plainTextToken;
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Token generation failed',
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ], 500);
+        }
 
         return response()->json([
             'message' => 'Login successful',
