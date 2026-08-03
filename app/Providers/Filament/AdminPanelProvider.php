@@ -55,6 +55,7 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 RefreshApiToken::class,
                 DispatchServingFilamentEvent::class,
+                \App\Http\Middleware\AuditFilamentActivity::class,
             ])
             ->authMiddleware([
                 Authenticate::class,
@@ -68,6 +69,7 @@ class AdminPanelProvider extends PanelProvider
                 'FixTech Pricing',
                 'FixTech Configuration',
                 'Analytics',
+                'Audit Logs',
                 'Filament Shield',
             ]);
     }

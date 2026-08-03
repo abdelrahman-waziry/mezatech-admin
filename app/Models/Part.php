@@ -13,7 +13,7 @@ use Sushi\Sushi;
 
 class Part extends Model
 {
-    use Sushi;
+    use Sushi, \App\Traits\AuditablePrice;
 
     protected $table = 'parts';
 

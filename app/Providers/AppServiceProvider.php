@@ -25,6 +25,8 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
+        \Illuminate\Support\Facades\Event::subscribe(\App\Listeners\AuditAuthenticationListener::class);
+
         \Illuminate\Support\Facades\Mail::extend('brevo', function (array $config = []) {
             $transportFactory = new \Symfony\Component\Mailer\Bridge\Brevo\Transport\BrevoTransportFactory();
             

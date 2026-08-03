@@ -12,7 +12,7 @@ use Sushi\Sushi;
 
 class Variant extends Model
 {
-    use Sushi;
+    use Sushi, \App\Traits\AuditablePrice;
 
     protected $table = 'variants';
 

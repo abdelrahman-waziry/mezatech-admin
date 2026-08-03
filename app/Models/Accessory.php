@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Accessory extends Model
 {
+    use \App\Traits\AuditablePrice;
+
     protected $fillable = [
         'accessory_category_id',
         'brand',

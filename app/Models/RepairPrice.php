@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class RepairPrice extends Model
 {
+    use \App\Traits\AuditablePrice;
+
     protected $fillable = [
         'repair_subcategory_id',
         'product_number',

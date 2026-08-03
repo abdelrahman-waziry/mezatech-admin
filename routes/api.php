@@ -41,6 +41,12 @@ Route::middleware('api')->prefix('v1')->group(function () {
         Route::post('events', [\App\Http\Controllers\Api\AnalyticsIngestionController::class, 'storeEvent']);
     });
 
+    // Diagnostics Ingestion Routes (Public)
+    Route::prefix('diagnostics')->group(function () {
+        Route::post('hardware', [\App\Http\Controllers\Api\DiagnosticController::class, 'storeHardware']);
+        Route::post('cosmetic', [\App\Http\Controllers\Api\DiagnosticController::class, 'storeCosmetic']);
+    });
+
     // Protected Catalog Routes (Repairs & Accessories)
     Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('repair-categories', \App\Http\Controllers\Api\RepairCategoryController::class)->only(['index', 'show']);
@@ -67,5 +73,15 @@ Route::middleware('api')->prefix('v1')->group(function () {
         Route::get('tradeins/conditions', [\App\Http\Controllers\Api\Admin\AnalyticsQueryController::class, 'tradeinsConditions']);
         Route::get('geography', [\App\Http\Controllers\Api\Admin\AnalyticsQueryController::class, 'geography']);
         Route::get('devices', [\App\Http\Controllers\Api\Admin\AnalyticsQueryController::class, 'devices']);
+    });
+
+    // Audit Logs Routes (Protected, Super Admin Only)
+    // EnsureFrontendRequestsAreStateful allows the Filament web session cookie to satisfy auth:sanctum
+    Route::middleware([\Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class, 'auth:sanctum', \App\Http\Middleware\EnsureSuperAdmin::class])->prefix('admin/audit-logs')->group(function () {
+        Route::get('summary', [\App\Http\Controllers\Api\Admin\AuditLogController::class, 'summary']);
+        Route::get('export', [\App\Http\Controllers\Api\Admin\AuditLogController::class, 'export']);
+        Route::get('/', [\App\Http\Controllers\Api\Admin\AuditLogController::class, 'index']);
+        Route::get('{uuid}', [\App\Http\Controllers\Api\Admin\AuditLogController::class, 'show']);
+        Route::delete('{uuid}', [\App\Http\Controllers\Api\Admin\AuditLogController::class, 'destroy']);
     });
 });
