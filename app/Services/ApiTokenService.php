@@ -47,9 +47,8 @@ class ApiTokenService
     public function fetchToken(): ?string
     {
         try {
-            $email = "a@b.c";
-            $password = "123654789@A!";
-            
+            $email = config('services.best_repair.email');
+            $password = config('services.best_repair.password');
 
             if (!$email || !$password) {
                 Log::error('BEST_REPAIR_API_EMAIL and BEST_REPAIR_API_PASSWORD must be set in .env');

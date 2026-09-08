@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasVendorScope;
 use App\Services\ApiTokenService;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Sushi\Sushi;
@@ -12,6 +14,7 @@ use Carbon\Carbon;
 class Product extends Model
 {
     use Sushi;
+    use HasVendorScope;
 
     protected $table = 'products';
     
@@ -256,5 +259,26 @@ class Product extends Model
     {
         // Adjust the class if your model is named differently
         return $this->hasMany(\App\Models\Variant::class);
+    }
+
+    public function parts()
+    {
+        return $this->hasMany(\App\Models\Part::class);
+    }
+
+    public function vendorScopeColumn(): string
+    {
+        return 'id';
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    public function vendorAllowedIds(Vendor $vendor): array
+    {
+        return DB::table('vendor_products')
+            ->where('vendor_id', $vendor->id)
+            ->pluck('product_id')
+            ->all();
     }
 }

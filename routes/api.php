@@ -85,3 +85,21 @@ Route::middleware('api')->prefix('v1')->group(function () {
         Route::delete('{uuid}', [\App\Http\Controllers\Api\Admin\AuditLogController::class, 'destroy']);
     });
 });
+
+// Vendor B2B API (machine-to-machine, Passport Client Credentials Grant)
+Route::prefix('v1/vendor')->middleware(['vendor.context', 'throttle:vendor-api'])->group(function () {
+    Route::get('products', [\App\Http\Controllers\Api\V1\Vendor\ProductController::class, 'index']);
+    Route::get('products/{product}/variants', [\App\Http\Controllers\Api\V1\Vendor\VariantController::class, 'index']);
+    Route::get('parts', [\App\Http\Controllers\Api\V1\Vendor\PartController::class, 'index']);
+    Route::post('calculate', [\App\Http\Controllers\Api\V1\Vendor\CalculateController::class, 'store']);
+    Route::get('questionnaires/trade-in', [\App\Http\Controllers\Api\V1\Vendor\QuestionnaireController::class, 'tradeIn']);
+});
+
+// Embeddable widget API (public embed key, no OAuth secret exposed to the browser)
+Route::prefix('v1/vendor/public')->middleware(['embed.context', 'throttle:vendor-api'])->group(function () {
+    Route::get('products', [\App\Http\Controllers\Api\V1\Vendor\ProductController::class, 'index']);
+    Route::get('products/{product}/variants', [\App\Http\Controllers\Api\V1\Vendor\VariantController::class, 'index']);
+    Route::get('parts', [\App\Http\Controllers\Api\V1\Vendor\PartController::class, 'index']);
+    Route::post('calculate', [\App\Http\Controllers\Api\V1\Vendor\CalculateController::class, 'store']);
+    Route::get('questionnaires/trade-in', [\App\Http\Controllers\Api\V1\Vendor\QuestionnaireController::class, 'tradeIn']);
+});

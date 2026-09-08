@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Trade-In Calculator — Vendor Demo Page</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: #f3f4f6;
+            margin: 0;
+            padding: 2rem;
+        }
+        header {
+            max-width: 480px;
+            margin: 0 auto 1.5rem;
+        }
+        #log {
+            max-width: 480px;
+            margin: 1.5rem auto 0;
+            font-size: 0.85rem;
+            background: #111827;
+            color: #d1fae5;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            min-height: 3rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>testing the trade-in widget</h1>
+        <p>This page simulates a third-party vendor embedding the widget.</p>
+    </header>
+
+    <trade-in-calculator
+        api-base="/api/v1/vendor/public"
+        client-id="pk_live_bTEtQS2SeBXnOuekf7hkqApqVPwywv1x"
+        language="en"
+        primary-color="#E60000"
+    ></trade-in-calculator>
+
+    <script src="/vendor/trade-in-widget.js" defer></script>
+    <script>
+        const calculator = document.querySelector('trade-in-calculator');
+        const log = document.getElementById('log');
+
+        calculator.addEventListener('onaccepted', (e) => {
+            log.textContent = 'Accepted: ' + JSON.stringify(e.detail, null, 2);
+        });
+
+        calculator.addEventListener('onrejected', (e) => {
+            log.textContent = 'Rejected: ' + JSON.stringify(e.detail, null, 2);
+        });
+    </script>
+</body>
+</html>

@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Support\VendorContext;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 use Illuminate\Support\Facades\URL;
@@ -37,6 +41,12 @@ class AppServiceProvider extends ServiceProvider
                     config('services.brevo.key')
                 )
             );
+        });
+
+        RateLimiter::for('vendor-api', function (Request $request) {
+            $vendor = VendorContext::current();
+
+            return Limit::perMinute(60)->by($vendor?->id ?? $request->ip());
         });
     }
 }

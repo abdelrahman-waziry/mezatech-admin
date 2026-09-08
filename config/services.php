@@ -26,6 +26,12 @@ return [
         'key' => env('BREVO_KEY'),
     ],
 
+    'best_repair' => [
+        'email' => env('BEST_REPAIR_API_EMAIL'),
+        'password' => env('BEST_REPAIR_API_PASSWORD'),
+        'base_url' => env('BEST_REPAIR_API_BASE_URL', 'https://bestrepairegypt.com/v1'),
+    ],
+
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),

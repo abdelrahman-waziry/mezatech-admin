@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Brand;
 use App\Models\Tag;
+use App\Services\PriceCalculationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -192,38 +193,18 @@ class ProductController extends Controller
             'partsWithValuesMap' => 'required|array',
         ]);
 
-        $variant = \App\Models\Variant::with(['product', 'product.parts'])->findOrFail($validated['variantId']);
-
-        // Calculate price based on parts
-        $totalPrice = $variant->price_after_discount ?? $variant->price_before_discount ?? 0;
-        $partsTotal = 0;
-
-        foreach ($validated['partsWithValuesMap'] as $partId => $value) {
-            $part = $variant->product->parts->firstWhere('id', $partId);
-            if ($part) {
-                // If part has info JSON with prices, use the value to determine price
-                if ($part->info && is_array($part->info)) {
-                    $priceKey = 'price' . $value;
-                    if (isset($part->info[$priceKey])) {
-                        $partsTotal += $part->info[$priceKey];
-                    } else {
-                        $partsTotal += $part->price * $value;
-                    }
-                } else {
-                    $partsTotal += $part->price * $value;
-                }
-            }
-        }
-
-        $finalPrice = $totalPrice + $partsTotal;
+        $result = app(PriceCalculationService::class)->calculate(
+            (int) $validated['variantId'],
+            $validated['partsWithValuesMap']
+        );
 
         return response()->json([
             'data' => [
-                'variant' => $variant,
+                'variant' => $result['variant'],
                 'customer' => $validated['customer'],
-                'partsTotal' => $partsTotal,
-                'variantPrice' => $totalPrice,
-                'finalPrice' => $finalPrice,
+                'partsTotal' => $result['partsTotal'],
+                'variantPrice' => $result['variantPrice'],
+                'finalPrice' => $result['finalPrice'],
             ],
         ]);
     }

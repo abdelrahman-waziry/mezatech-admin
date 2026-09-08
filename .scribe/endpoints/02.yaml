@@ -1,0 +1,45 @@
+name: 'Vendor API - Parts'
+description: ''
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/vendor/parts
+    metadata:
+      custom: []
+      groupName: 'Vendor API - Parts'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'List accessible parts/inventory'
+      description: 'Returns parts across all products this vendor has been granted access to.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "data": [
+              {"id": 5, "name": "Screen", "price": 50, "product_id": 1}
+            ]
+          }
+        headers: []
+        description: success
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null

@@ -1,0 +1,45 @@
+name: 'Vendor API - Products'
+description: ''
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/vendor/products
+    metadata:
+      custom: []
+      groupName: 'Vendor API - Products'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'List products'
+      description: 'Returns the products this vendor has been granted access to.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "data": [
+              {"id": 1, "name": "iPhone 13", "sku": "IP13", "condition": 1}
+            ]
+          }
+        headers: []
+        description: success
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null

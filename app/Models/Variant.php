@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasVendorScope;
 use App\Services\ApiTokenService;
 use App\Services\VariantService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Sushi\Sushi;
 
 class Variant extends Model
 {
-    use Sushi, \App\Traits\AuditablePrice;
+    use Sushi, \App\Traits\AuditablePrice, HasVendorScope;
 
     protected $table = 'variants';
 
@@ -419,5 +421,23 @@ class Variant extends Model
     public function variantFeatures()
     {
         return $this->hasMany(VariantFeature::class);
+    }
+
+    public function vendorScopeColumn(): string
+    {
+        return 'product_id';
+    }
+
+    /**
+     * Variant access is inherited from the vendor's whitelisted products.
+     *
+     * @return array<int, int>
+     */
+    public function vendorAllowedIds(Vendor $vendor): array
+    {
+        return DB::table('vendor_products')
+            ->where('vendor_id', $vendor->id)
+            ->pluck('product_id')
+            ->all();
     }
 }

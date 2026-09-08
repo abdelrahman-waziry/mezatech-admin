@@ -13,6 +13,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->trustProxies(at: '*');
+
+        $middleware->alias([
+            'vendor.context' => \App\Http\Middleware\ResolveVendorFromClient::class,
+            'embed.context' => \App\Http\Middleware\ResolveVendorFromEmbedKey::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

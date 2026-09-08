@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (\Illuminate\Support\Facades\DB::getDriverName() !== 'mysql') {
+            return;
+        }
+
         \Illuminate\Support\Facades\DB::statement("ALTER TABLE trade_in_requests MODIFY COLUMN status ENUM('pending', 'accepted', 'rejected', 'confirmed') DEFAULT 'pending'");
     }
 
@@ -19,6 +23,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (\Illuminate\Support\Facades\DB::getDriverName() !== 'mysql') {
+            return;
+        }
+
         \Illuminate\Support\Facades\DB::table('trade_in_requests')
             ->where('status', 'confirmed')
             ->update(['status' => 'pending']);

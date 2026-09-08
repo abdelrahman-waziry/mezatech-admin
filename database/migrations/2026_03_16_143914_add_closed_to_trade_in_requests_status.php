@@ -12,6 +12,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (DB::getDriverName() !== 'mysql') {
+            return;
+        }
+
         DB::statement("ALTER TABLE trade_in_requests MODIFY COLUMN status ENUM('pending', 'accepted', 'rejected', 'confirmed', 'closed') DEFAULT 'pending'");
     }
 
@@ -20,6 +24,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (DB::getDriverName() !== 'mysql') {
+            return;
+        }
+
         DB::table('trade_in_requests')
             ->where('status', 'closed')
             ->update(['status' => 'pending']);

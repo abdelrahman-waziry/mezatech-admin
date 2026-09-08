@@ -2,18 +2,20 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasVendorScope;
 use App\Services\ApiTokenService;
 use App\Services\PartService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Sushi\Sushi;
 
 class Part extends Model
 {
-    use Sushi, \App\Traits\AuditablePrice;
+    use Sushi, \App\Traits\AuditablePrice, HasVendorScope;
 
     protected $table = 'parts';
 
@@ -293,5 +295,21 @@ class Part extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function vendorScopeColumn(): string
+    {
+        return 'id';
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    public function vendorAllowedIds(Vendor $vendor): array
+    {
+        return DB::table('vendor_parts')
+            ->where('vendor_id', $vendor->id)
+            ->pluck('part_id')
+            ->all();
     }
 }
