@@ -1,15 +1,15 @@
 <?php
 
 return [
-    'paths' => ['api/v1/vendor/public/*'],
+    'paths' => ['api/*'],
 
-    'allowed_methods' => ['GET', 'POST', 'OPTIONS'],
+    'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 
     'allowed_origins' => ['*'],
 
     'allowed_origins_patterns' => [],
 
-    'allowed_headers' => ['Content-Type', 'Accept', 'X-Client-Id'],
+    'allowed_headers' => ['Content-Type', 'Accept', 'Authorization', 'X-Client-Id'],
 
     'exposed_headers' => [],
 
