@@ -8,14 +8,16 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('customers', function (Blueprint $table): void {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->string('phone_number')->nullable();
-            $table->string('password');
-            $table->timestamps();
-        });
+        if (! Schema::hasTable('customers')) {
+            Schema::create('customers', function (Blueprint $table): void {
+                $table->id();
+                $table->string('name');
+                $table->string('email')->unique();
+                $table->string('phone_number')->nullable();
+                $table->string('password');
+                $table->timestamps();
+            });
+        }
     }
 
     public function down(): void

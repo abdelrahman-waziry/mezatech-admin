@@ -23,39 +23,48 @@ return new class extends Migration
             });
         }
 
-        Schema::create('tags', function (Blueprint $table): void {
+        if (! Schema::hasTable('tags')) {
+            Schema::create('tags', function (Blueprint $table): void {
             $table->id();
             $table->string('name')->unique();
             $table->timestamps();
-        });
+            });
+        }
 
-        Schema::create('product_tag', function (Blueprint $table): void {
-            $table->integer('product_id');
+        if (! Schema::hasTable('product_tag')) {
+            Schema::create('product_tag', function (Blueprint $table): void {
+            $table->foreignId('product_id');
             $table->foreign('product_id')->references('id')->on('products')->cascadeOnDelete();
             $table->foreignId('tag_id')->constrained()->cascadeOnDelete();
             $table->primary(['product_id', 'tag_id']);
-        });
+            });
+        }
 
-        Schema::create('features', function (Blueprint $table): void {
+        if (! Schema::hasTable('features')) {
+            Schema::create('features', function (Blueprint $table): void {
             $table->id();
             $table->string('name');
-            $table->integer('product_id')->nullable();
+            $table->foreignId('product_id')->nullable();
             $table->foreign('product_id')->references('id')->on('products')->nullOnDelete();
             $table->text('values_summary')->nullable();
             $table->timestamps();
-        });
+            });
+        }
 
-        Schema::create('feature_values', function (Blueprint $table): void {
+        if (! Schema::hasTable('feature_values')) {
+            Schema::create('feature_values', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('feature_id')->constrained()->cascadeOnDelete();
             $table->string('value');
             $table->string('image')->nullable();
             $table->timestamps();
-        });
+            });
+        }
 
-        Schema::create('variants', function (Blueprint $table): void {
+        if (! Schema::hasTable('variants')) {
+            Schema::create('variants', function (Blueprint $table): void {
             $table->id();
-            $table->integer('product_id');
+            $table->foreignId('product_id');
             $table->foreign('product_id')->references('id')->on('products')->cascadeOnDelete();
             $table->string('name');
             $table->decimal('buying_price', 12, 2)->nullable();
@@ -64,11 +73,13 @@ return new class extends Migration
             $table->decimal('price_after_discount', 12, 2)->nullable();
             $table->unsignedInteger('stock')->default(0);
             $table->timestamps();
-        });
+            });
+        }
 
-        Schema::create('parts', function (Blueprint $table): void {
+        if (! Schema::hasTable('parts')) {
+            Schema::create('parts', function (Blueprint $table): void {
             $table->id();
-            $table->integer('product_id');
+            $table->foreignId('product_id');
             $table->foreign('product_id')->references('id')->on('products')->cascadeOnDelete();
             $table->string('name');
             $table->decimal('price', 12, 2)->default(0);
@@ -76,15 +87,18 @@ return new class extends Migration
             $table->unsignedInteger('condition')->nullable();
             $table->json('info')->nullable();
             $table->timestamps();
-        });
+            });
+        }
 
-        Schema::create('variant_features', function (Blueprint $table): void {
+        if (! Schema::hasTable('variant_features')) {
+            Schema::create('variant_features', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('variant_id')->constrained()->cascadeOnDelete();
             $table->foreignId('feature_id')->constrained()->cascadeOnDelete();
             $table->foreignId('feature_value_id')->nullable()->constrained()->nullOnDelete();
             $table->timestamps();
-        });
+            });
+        }
     }
 
     public function down(): void
