@@ -27,7 +27,6 @@ class PriceCalculationService
         $minimumPrice = (float) ($variant->product?->minimum_buying_price ?? 0);
         $wastePrice = (float) ($variant->product?->waste_price ?? 0);
         $checkedTypes = [];
-        $functionalFailure = false;
         $selectedParts = collect($partsWithValuesMap)
             ->mapWithKeys(fn ($value, $partId) => [(string) $partId => (int) $value]);
 
@@ -41,13 +40,16 @@ class PriceCalculationService
         if ($functionalPart && $functionalValue !== null) {
             $checkedTypes[] = 0;
             if ($functionalValue !== 1) {
-                $price = $wastePrice;
-                $functionalFailure = true;
+                return [
+                    'variant' => $variant,
+                    'variantPrice' => (float) ($variant->buying_price ?? 0),
+                    'partsTotal' => (float) ($wastePrice - (float) ($variant->buying_price ?? 0)),
+                    'finalPrice' => $wastePrice,
+                ];
             }
         }
 
-        if (! $functionalFailure) {
-            $repairedPart = $partByType(1);
+        $repairedPart = $partByType(1);
             $repairedValue = $valueFor($repairedPart);
             if ($repairedPart && $repairedValue !== null) {
                 $checkedTypes[] = 1;
@@ -78,7 +80,6 @@ class PriceCalculationService
                 }
                 $checkedTypes[] = 18;
             }
-        }
 
         foreach ($selectedParts as $partId => $value) {
             $part = $parts->get((int) $partId);
