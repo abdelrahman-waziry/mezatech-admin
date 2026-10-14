@@ -73,8 +73,7 @@ RUN composer install \
     --no-interaction \
     --prefer-dist \
     --no-scripts \
-    && php artisan package:discover --ansi \
-    && php artisan filament:upgrade
+    && php artisan package:discover --ansi
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
