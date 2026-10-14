@@ -42,7 +42,6 @@ php artisan view:clear
 if [ "${RUN_MIGRATIONS:-false}" = "true" ]; then
     echo "Running database migrations..."
     php artisan migrate --force
-    php artisan filament:upgrade --ansi
 fi
 
 php artisan storage:link || true
