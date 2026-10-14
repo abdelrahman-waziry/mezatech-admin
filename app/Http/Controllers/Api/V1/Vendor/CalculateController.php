@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Vendor;
 
 use App\Http\Controllers\Controller;
-use App\Services\BestRepairCalculationService;
+use App\Services\PriceCalculationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use RuntimeException;
@@ -16,10 +16,7 @@ class CalculateController extends Controller
     /**
      * Calculate a repair price
      *
-     * Forwards the variant, customer and selected part conditions to the Best Repair
-     * pricing engine and returns its authoritative valuation.
-     * Only variants within this vendor's whitelisted catalog are considered;
-     * a variant outside the vendor's scope returns 404.
+    * Calculates the valuation from the Admin catalog and pricing rules.
      *
      * @authenticated
      *
@@ -35,7 +32,7 @@ class CalculateController extends Controller
      *   "data": {"variantPrice": 90, "partsTotal": 50, "finalPrice": 140}
      * }
      */
-    public function store(Request $request, BestRepairCalculationService $calculator): JsonResponse
+    public function store(Request $request, PriceCalculationService $calculator): JsonResponse
     {
         $validated = $request->validate([
             'variantId' => 'required|integer|min:1',
@@ -49,11 +46,10 @@ class CalculateController extends Controller
         ]);
 
         try {
-            $finalPrice = $calculator->calculate(
+            $calculation = $calculator->calculate(
                 (int) $validated['variantId'],
-                $validated['customer'],
-                $validated['repairedPartsBefore'] ?? [],
-                $validated['partsWithValuesMap']
+                $validated['partsWithValuesMap'],
+                $validated['repairedPartsBefore'] ?? []
             );
         } catch (RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 502);
@@ -61,7 +57,9 @@ class CalculateController extends Controller
 
         return response()->json([
             'data' => [
-                'finalPrice' => $finalPrice,
+                'variantPrice' => $calculation['variantPrice'],
+                'partsTotal' => $calculation['partsTotal'],
+                'finalPrice' => $calculation['finalPrice'],
             ],
         ]);
     }
