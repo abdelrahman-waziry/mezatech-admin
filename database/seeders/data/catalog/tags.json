@@ -1,0 +1,30 @@
+[
+    {
+        "id": 1,
+        "name": "Android"
+    },
+    {
+        "id": 2,
+        "name": "Smart Phone"
+    },
+    {
+        "id": 3,
+        "name": "Apple"
+    },
+    {
+        "id": 4,
+        "name": "iPhone"
+    },
+    {
+        "id": 5,
+        "name": "iOS"
+    },
+    {
+        "id": 6,
+        "name": "Galaxy"
+    },
+    {
+        "id": 7,
+        "name": "New"
+    }
+]

@@ -44,10 +44,10 @@ class PartController extends Controller
 
         $parts = collect();
 
-        foreach ($productIds as $productId) {
-            Part::$currentProductId = $productId;
-            $parts = $parts->merge(Part::all(['id', 'name', 'price', 'type', 'condition', 'product_id']));
-        }
+        $parts = Part::query()
+            ->whereIn('product_id', $productIds)
+            ->when($selectedProductId !== null, fn ($query) => $query->where('product_id', $selectedProductId))
+            ->get(['id', 'name', 'price', 'type', 'condition', 'product_id']);
 
         return response()->json([
             'data' => $parts->values(),

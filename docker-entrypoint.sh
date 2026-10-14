@@ -37,9 +37,15 @@ php artisan view:clear
 #    php artisan view:cache || true
 # fi
 
-# Run migrations
-echo "Running database migrations..."
-APP_URL=http://localhost php artisan migrate --force
+if [ "${RUN_MIGRATIONS:-false}" = "true" ]; then
+    echo "Running database migrations..."
+    php artisan migrate --force
+fi
+
+php artisan storage:link || true
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
 
 # Export execution based on provided arguments command
 echo "Starting container process..."

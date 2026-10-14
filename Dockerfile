@@ -67,12 +67,14 @@ COPY --from=frontend /app/public/build public/build
 RUN git config --global --add safe.directory /var/www/html
 
 # Install PHP dependencies
-RUN composer update \
+RUN composer install \
     --no-dev \
     --optimize-autoloader \
     --no-interaction \
     --prefer-dist \
-    --no-scripts
+    --no-scripts \
+    && php artisan package:discover --ansi \
+    && php artisan filament:upgrade
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \

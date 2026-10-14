@@ -118,7 +118,7 @@ class VariantForm
         // Find the feature object by ID
         $feature = collect($features)->firstWhere('id', (int)$featureId);
         
-        if (!$feature || empty($feature['values'])) return [];
+        if (!$feature || !is_array($feature['values'] ?? null)) return [];
 
         $map = [];
         foreach ($feature['values'] as $val) {

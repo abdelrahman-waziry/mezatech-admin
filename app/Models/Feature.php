@@ -5,14 +5,12 @@ namespace App\Models;
 use App\Services\ApiTokenService;
 use App\Services\FeatureService;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Sushi\Sushi;
 
 class Feature extends Model
 {
-    use Sushi;
-
     protected $table = 'features';
     // Static cache for request-scoped caching
     protected static array $requestCache = [];
@@ -36,8 +34,15 @@ class Feature extends Model
         'product_id' => 'integer',
     ];
 
+    public function values(): HasMany
+    {
+        return $this->hasMany(FeatureValue::class);
+    }
+
     public function getRows(): array
     {
+        return static::query()->get()->toArray();
+
         // Smart Caching: Request-scoped cache
         if (isset(static::$requestCache['features_data'])) {
              return static::$requestCache['features_data'];
@@ -97,80 +102,4 @@ class Feature extends Model
     }
 
 
-    public function getIncrementing(): bool
-    {
-        return false;
-    }
-
-    protected $keyType = 'int';
-
-    public function save(array $options = [])
-    {
-        try {
-            $service = new FeatureService();
-
-            // Build data array directly from attributes since Sushi's attributesToArray() 
-            // doesn't include non-schema attributes
-            $data = [];
-            
-            // Get standard attributes
-            if (isset($this->attributes['name'])) {
-                $data['name'] = $this->attributes['name'];
-            }
-            
-            if (isset($this->attributes['product_id'])) {
-                $data['product_id'] = $this->attributes['product_id'];
-            }
-            
-            if (isset($this->attributes['id'])) {
-                $data['id'] = $this->attributes['id'];
-            }
-            
-            // IMPORTANT: Include values if they were set
-            if (isset($this->attributes['values'])) {
-                $data['values'] = $this->attributes['values'];
-            }
-            
-
-            \Illuminate\Support\Facades\Log::info('Feature: save() called', [
-                'raw_attributes' => $this->attributes,
-                'prepared_data' => $data,
-                'exists' => $this->exists,
-                'has_values' => isset($data['values']),
-                'values_count' => isset($data['values']) ? count($data['values']) : 0,
-                'values_detail' => $data['values'] ?? null
-            ]);
-
-            if ($this->exists && $this->id) {
-                $result = $service->update((string) $this->id, $data);
-            } else {
-                $result = $service->create($data);
-            }
-
-            if (isset($result['id'])) {
-                $this->setAttribute('id', $result['id']);
-                $this->exists = true;
-            }
-
-            Log::info('Feature saved via API', ['id' => $this->id ?? 'new', 'result' => $result]);
-            return true;
-        } catch (\Exception $e) {
-            Log::error('Failed to save feature: ' . $e->getMessage());
-            throw $e;
-        }
-    }
-
-    public function delete(): bool
-    {
-        try {
-            $service = new FeatureService();
-            $service->delete((string) $this->id);
-
-            Log::info('Feature deleted via API', ['id' => $this->id]);
-            return true;
-        } catch (\Exception $e) {
-            Log::error('Failed to delete feature: ' . $e->getMessage());
-            throw $e;
-        }
-    }
 }

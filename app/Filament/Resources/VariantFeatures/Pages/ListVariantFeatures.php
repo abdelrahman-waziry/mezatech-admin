@@ -5,11 +5,9 @@ namespace App\Filament\Resources\VariantFeatures\Pages;
 use App\Filament\Resources\VariantFeatures\VariantFeatureResource;
 use App\Models\Product;
 use App\Models\Variant;
-use App\Services\ApiTokenService;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Http;
 
 class ListVariantFeatures extends ListRecords
 {
@@ -48,23 +46,20 @@ class ListVariantFeatures extends ListRecords
             return $this->variantFeatureCache[$productId];
         }
 
-        // Fetch raw variant data with variantFeatures included
-        // We can't use getRows() because Sushi can't store arrays in SQLite
-        $rawVariants = Variant::fetchRawVariantsWithFeatures($productId);
-
-        // Get product name and features from API
-        // Since features are now product-specific, fetch them from the product endpoint
-        $token = app(ApiTokenService::class)->getToken();
-        $productResponse = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-            'Accept' => 'application/json',
-        ])->timeout(30)->get("https://bestrepairegypt.com/v1/products/{$productId}");
-
-        $productData = $productResponse->json() ?? [];
-        $productName = $productData['name'] ?? 'Unknown product';
-        
-        // Get features from the product (features are now product-specific)
-        $features = $productData['features'] ?? [];
+        $variants = Variant::with('variantFeatures.feature')->where('product_id', $productId)->get();
+        $productName = Product::find($productId)?->name ?? 'Unknown product';
+        $features = \App\Models\Feature::where('product_id', $productId)->get()->map(fn ($feature) => [
+            'id' => $feature->id,
+            'name' => $feature->name,
+            'values' => [],
+        ])->all();
+        $rawVariants = $variants->map(fn ($variant) => [
+            'name' => $variant->name,
+            'variantFeatures' => $variant->variantFeatures->map(fn ($link) => [
+                'feature_id' => $link->feature_id,
+                'feature_value_id' => $link->feature_value_id,
+            ])->all(),
+        ])->all();
 
         // Build lookup caches for features and feature values
         // Features are nested within the product, and each feature has its values
@@ -80,7 +75,7 @@ class ListVariantFeatures extends ListRecords
                 $featuresCache[$featureId] = $feature['name'] ?? 'Unknown Feature';
                 
                 // Extract feature values from the nested values array
-                $values = $feature['values'] ?? [];
+                $values = is_array($feature['values'] ?? null) ? $feature['values'] : [];
                 foreach ($values as $value) {
                     $valueId = $value['id'] ?? null;
                     if ($valueId) {
@@ -95,7 +90,7 @@ class ListVariantFeatures extends ListRecords
         $records = collect();
 
         foreach ($rawVariants as $variant) {
-            $variantFeatures = Arr::get($variant, 'variantFeatures', []);
+            $variantFeatures = Arr::get($variant, 'variantFeatures') ?? [];
 
             foreach ($variantFeatures as $featureRow) {
                 // Try multiple possible structures for feature ID

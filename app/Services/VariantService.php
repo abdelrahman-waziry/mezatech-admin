@@ -35,11 +35,11 @@ class VariantService extends BaseExternalService
         if (isset($data['variant_features']) && is_array($data['variant_features'])) {
             $payload['variantFeatures'] = array_map(function ($vf) {
                 return [
-                    'feature' => ['id' => (int) $vf['feature_id']],
-                    'featureValue' => ['id' => (int) $vf['feature_value_id']],
+                    'feature' => ['id' => (int) ($vf['feature_id'] ?? 0)],
+                    'featureValue' => ['id' => (int) ($vf['feature_value_id'] ?? $vf['feature_value'] ?? 0)],
                 ];
             }, array_filter($data['variant_features'], function ($vf) {
-                return !empty($vf['feature_id']) && !empty($vf['feature_value_id']);
+                return !empty($vf['feature_id']) && !empty($vf['feature_value_id'] ?? $vf['feature_value'] ?? null);
             }));
         }
 

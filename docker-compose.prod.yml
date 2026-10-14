@@ -7,15 +7,17 @@ services:
       APP_NAME: "${APP_NAME:-Laravel}"
       APP_ENV: production
       APP_DEBUG: "false"
-      APP_URL: "${APP_URL:-https://${DOMAIN_NAME}}"
-      APP_KEY: "${APP_KEY}"
+      APP_URL: "${APP_URL:?APP_URL is required}"
+      APP_KEY: "${APP_KEY:?APP_KEY is required}"
+      RUN_MIGRATIONS: "true"
       QUEUE_CONNECTION: database
+      DB_QUEUE_RETRY_AFTER: 660
       DB_CONNECTION: mysql
       DB_HOST: db
       DB_PORT: 3306
-      DB_DATABASE: "${DB_DATABASE:-laravel}"
-      DB_USERNAME: "${DB_USERNAME:-laravel}"
-      DB_PASSWORD: "${DB_PASSWORD:-secret}"
+      DB_DATABASE: "${DB_DATABASE:?DB_DATABASE is required}"
+      DB_USERNAME: "${DB_USERNAME:?DB_USERNAME is required}"
+      DB_PASSWORD: "${DB_PASSWORD:?DB_PASSWORD is required}"
     volumes:
       - shared-storage:/var/www/html/storage
     depends_on:
@@ -31,19 +33,47 @@ services:
       APP_NAME: "${APP_NAME:-Laravel}"
       APP_ENV: production
       APP_DEBUG: "false"
-      APP_URL: "${APP_URL:-https://${DOMAIN_NAME}}"
-      APP_KEY: "${APP_KEY}"
+      APP_URL: "${APP_URL:?APP_URL is required}"
+      APP_KEY: "${APP_KEY:?APP_KEY is required}"
+      RUN_MIGRATIONS: "false"
       QUEUE_CONNECTION: database
+      DB_QUEUE_RETRY_AFTER: 660
       DB_CONNECTION: mysql
       DB_HOST: db
       DB_PORT: 3306
-      DB_DATABASE: "${DB_DATABASE:-laravel}"
-      DB_USERNAME: "${DB_USERNAME:-laravel}"
-      DB_PASSWORD: "${DB_PASSWORD:-secret}"
+      DB_DATABASE: "${DB_DATABASE:?DB_DATABASE is required}"
+      DB_USERNAME: "${DB_USERNAME:?DB_USERNAME is required}"
+      DB_PASSWORD: "${DB_PASSWORD:?DB_PASSWORD is required}"
     volumes:
       - shared-storage:/var/www/html/storage
     depends_on:
       - db
+      - app
+    networks:
+      - app-network
+
+  scheduler:
+    build: .
+    restart: unless-stopped
+    command: php artisan schedule:work
+    environment:
+      APP_NAME: "${APP_NAME:-Laravel}"
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: "${APP_URL:?APP_URL is required}"
+      APP_KEY: "${APP_KEY:?APP_KEY is required}"
+      RUN_MIGRATIONS: "false"
+      QUEUE_CONNECTION: database
+      DB_QUEUE_RETRY_AFTER: 660
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: "${DB_DATABASE:?DB_DATABASE is required}"
+      DB_USERNAME: "${DB_USERNAME:?DB_USERNAME is required}"
+      DB_PASSWORD: "${DB_PASSWORD:?DB_PASSWORD is required}"
+    volumes:
+      - shared-storage:/var/www/html/storage
+    depends_on:
       - app
     networks:
       - app-network
@@ -55,7 +85,7 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      DOMAIN_NAME: "${DOMAIN_NAME}"
+      DOMAIN_NAME: "${DOMAIN_NAME:?DOMAIN_NAME is required}"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
@@ -69,10 +99,10 @@ services:
     image: mysql:8.0
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: "${DB_DATABASE:-laravel}"
-      MYSQL_USER: "${DB_USERNAME:-laravel}"
-      MYSQL_PASSWORD: "${DB_PASSWORD:-secret}"
-      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD:-secret}"
+      MYSQL_DATABASE: "${DB_DATABASE:?DB_DATABASE is required}"
+      MYSQL_USER: "${DB_USERNAME:?DB_USERNAME is required}"
+      MYSQL_PASSWORD: "${DB_PASSWORD:?DB_PASSWORD is required}"
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD:?DB_ROOT_PASSWORD is required}"
     volumes:
       - db-data:/var/lib/mysql
     networks:

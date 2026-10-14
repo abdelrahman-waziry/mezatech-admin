@@ -59,37 +59,12 @@ class CreateFeature extends CreateRecord
             unset($value); // Break reference
         }
 
-        // Create new Feature instance using the FeatureService directly
-        $service = new \App\Services\FeatureService();
-        
-        // Prepare data for API
-        $apiData = [
+        $feature = \App\Models\Feature::create([
             'name' => $data['name'] ?? '',
             'product_id' => $data['product_id'] ?? null,
-            'values' => $data['values'] ?? [],
-        ];
-        
-        \Illuminate\Support\Facades\Log::info('CreateFeature: Calling FeatureService->create', [
-            'apiData' => $apiData,
-            'values_count' => count($apiData['values'])
+            'values_summary' => collect($data['values'] ?? [])->pluck('value')->implode(', '),
         ]);
-        
-        // Create via API
-        $result = $service->create($apiData);
-        
-        \Illuminate\Support\Facades\Log::info('CreateFeature: API result', [
-            'result' => $result
-        ]);
-        
-        // Create a Feature model instance with the returned data
-        $feature = new \App\Models\Feature();
-        if (isset($result['id'])) {
-            $feature->id = $result['id'];
-            $feature->exists = true;
-        }
-        $feature->name = $result['name'] ?? $apiData['name'];
-        $feature->product_id = $result['productId'] ?? $result['product_id'] ?? $apiData['product_id'];
-        
-        return $feature;
+        $feature->values()->createMany($data['values'] ?? []);
+        return $feature->load('values');
     }
 }

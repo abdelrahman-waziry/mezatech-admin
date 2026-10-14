@@ -16,7 +16,6 @@ class FileController extends Controller
     {
         $validated = $request->validate([
             'file' => 'required|file|max:10240', // 10MB max
-            'request' => 'nullable|file',
         ]);
 
         try {
@@ -31,7 +30,7 @@ class FileController extends Controller
 
             $path = "images/{$entityType}/{$entityId}/{$fileName}";
 
-            Storage::disk('public')->put($path, file_get_contents($file));
+            Storage::disk('public')->put($path, $file->get());
 
             return response()->json([
                 'message' => 'File uploaded successfully',
@@ -69,13 +68,13 @@ class FileController extends Controller
             }
 
             $file = Storage::disk('public')->get($filename);
-            $mimeType = Storage::disk('public')->mimeType($filename);
+            $mimeType = Storage::disk('public')->mimeType($filename) ?: 'application/octet-stream';
 
             // If width is specified and it's an image, resize it
             if (isset($validated['width']) && str_starts_with($mimeType, 'image/')) {
-                // For now, return the original file
-                // In production, you might want to use intervention/image or similar
-                return response($file, 200)->header('Content-Type', $mimeType);
+                $resized = $this->resizeImage($file, $mimeType, (int) $validated['width']);
+                return response($resized['contents'], 200)
+                    ->header('Content-Type', $resized['mime']);
             }
 
             return response($file, 200)->header('Content-Type', $mimeType);
@@ -85,6 +84,36 @@ class FileController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    private function resizeImage(string $contents, string $mimeType, int $width): array
+    {
+        $source = @imagecreatefromstring($contents);
+        if ($source === false) {
+            return ['contents' => $contents, 'mime' => $mimeType];
+        }
+
+        $sourceWidth = imagesx($source);
+        $sourceHeight = imagesy($source);
+        $height = max(1, (int) round($sourceHeight * ($width / $sourceWidth)));
+        $target = imagecreatetruecolor($width, $height);
+
+        imagealphablending($target, false);
+        imagesavealpha($target, true);
+        imagecopyresampled($target, $source, 0, 0, 0, 0, $width, $height, $sourceWidth, $sourceHeight);
+
+        ob_start();
+        match ($mimeType) {
+            'image/png' => imagepng($target),
+            'image/gif' => imagegif($target),
+            default => imagejpeg($target, null, 85),
+        };
+        $resized = ob_get_clean() ?: $contents;
+
+        imagedestroy($source);
+        imagedestroy($target);
+
+        return ['contents' => $resized, 'mime' => $mimeType];
     }
 
     /**

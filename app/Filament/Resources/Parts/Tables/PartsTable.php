@@ -17,7 +17,10 @@ class PartsTable
                 Tables\Columns\TextColumn::make('name')->label('Part')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('product_name')->label('Product')->sortable(),
                 Tables\Columns\TextColumn::make('price')->label('Price')->money('EGP')->sortable(),
-                // Tables\Columns\TextColumn::make('type')->label('Type ID')->sortable(),
+                Tables\Columns\TextColumn::make('type')
+                    ->label('Type ID')
+                    ->placeholder('Unset')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')->label('Created')->dateTime()->sortable(),
             ])
             ->filters([

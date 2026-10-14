@@ -10,6 +10,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Log;
 
 class EditVariant extends EditRecord
 {
@@ -21,6 +22,8 @@ class EditVariant extends EditRecord
      */
     public function resolveRecord(int|string $key): Model
     {
+        return Variant::query()->findOrFail($key);
+
         try {
             $service = new VariantService();
             $variantData = $service->fetchOne((string) $key);
@@ -39,9 +42,6 @@ class EditVariant extends EditRecord
                 ?? null;
             
             if ($productId) {
-                Variant::$currentProductId = (int) $productId;
-                // Store in session for AJAX request persistence
-                session(['variant_edit_product_id' => (int) $productId]);
             }
 
             // Create a Variant model instance from API data
@@ -79,6 +79,8 @@ class EditVariant extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
+        return $data;
+
         // Fetch variant from API to get full variant data including features
         try {
             $service = new VariantService();
@@ -109,10 +111,6 @@ class EditVariant extends EditRecord
 
             if ($productId) {
                 $data['product_id'] = (int) $productId;
-                // Also set on the static property for Sushi operations
-                Variant::$currentProductId = (int) $productId;
-                // Store in session for AJAX request persistence
-                session(['variant_edit_product_id' => (int) $productId]);
             }
 
             \Illuminate\Support\Facades\Log::info('EditVariant: mutateFormDataBeforeFill', [
@@ -135,10 +133,10 @@ class EditVariant extends EditRecord
 
                     return [
                         'feature_id' => $vf['feature']['id'] ?? $vf['feature_id'] ?? null,
-                        'feature_value' => $vf['featureValue']['value'] ?? $vf['featureValue']['id'] ?? $vf['feature_value'] ?? null,
+                        'feature_value_id' => $vf['featureValue']['id'] ?? $vf['feature_value_id'] ?? null,
                     ];
                 })->filter(function ($vf) {
-                    return !empty($vf['feature_id']) && !empty($vf['feature_value']);
+                    return !empty($vf['feature_id']) && !empty($vf['feature_value_id']);
                 })->values()->toArray();
 
                 \Illuminate\Support\Facades\Log::info('EditVariant: Mapped variant features', [
@@ -168,9 +166,7 @@ class EditVariant extends EditRecord
         try {
             $data = $this->form->getState();
 
-            // Update via API
-            $service = new VariantService();
-            $service->update($this->record->id, $data);
+            $this->record->update($data);
 
             // Clear the session product_id since we're done editing
             $productId = session('variant_edit_product_id');
@@ -179,7 +175,7 @@ class EditVariant extends EditRecord
             Notification::make()
                 ->success()
                 ->title('Variant Updated')
-                ->body('Variant has been updated successfully via the API.')
+                ->body('Variant has been updated successfully.')
                 ->send();
 
             // Redirect to listing page with the product filter preserved

@@ -10,11 +10,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Sushi\Sushi;
 
 class Variant extends Model
 {
-    use Sushi, \App\Traits\AuditablePrice, HasVendorScope;
+    use \App\Traits\AuditablePrice, HasVendorScope;
 
     protected $table = 'variants';
 
@@ -22,8 +21,6 @@ class Variant extends Model
      * Static property to store the product ID filter for the current request
      * This is set by ListVariants before querying
      */
-    public static ?int $currentProductId = null;
-    
     // Static cache for request-scoped caching
     protected static array $requestCache = [];
 
@@ -41,17 +38,8 @@ class Variant extends Model
      */
     protected function getFilterProductId(): ?int
     {
-        // Check static property first (set by ListVariants or EditVariant)
-        if (static::$currentProductId !== null) {
-            // Also store in session for AJAX request persistence
-            session(['variant_edit_product_id' => static::$currentProductId]);
-            return static::$currentProductId;
-        }
-
-        // Check URL query parameter (passed from listing page to edit page)
         $productId = request()->query('product_id');
         if ($productId) {
-            static::$currentProductId = (int) $productId;
             session(['variant_edit_product_id' => (int) $productId]);
             return (int) $productId;
         }
@@ -59,7 +47,6 @@ class Variant extends Model
         // Check session (for AJAX requests that lose the static property)
         $sessionProductId = session('variant_edit_product_id');
         if ($sessionProductId) {
-            static::$currentProductId = (int) $sessionProductId;
             return (int) $sessionProductId;
         }
 
@@ -77,10 +64,6 @@ class Variant extends Model
             $productId = $filters['product_id'] ?? null;
         }
 
-        if ($productId) {
-            static::$currentProductId = (int) $productId;
-        }
-
         return $productId ? (int) $productId : null;
     }
 
@@ -91,43 +74,9 @@ class Variant extends Model
      */
     public function resolveRouteBinding($value, $field = null)
     {
-        try {
-            $service = new VariantService();
-            // Fetch single variant by ID from API
-            $data = $service->fetchOne($value);
-
-            if (!$data) {
-                abort(404);
-            }
-
-            // Map API data to Model attributes (Same logic as getRows)
-            $productRef = $data['product'] ?? [];
-            
-            $attributes = [
-                'id' => $data['id'] ?? $value,
-                'name' => $data['name'] ?? 'Unnamed',
-                'buying_price' => (float) ($data['buyingPrice'] ?? $data['buying_price'] ?? 0),
-                'price_before_discount' => (float) ($data['priceBeforeDiscount'] ?? $data['price_before_discount'] ?? 0),
-                'discount' => (float) ($data['discount'] ?? 0),
-                'price_after_discount' => (float) ($data['priceAfterDiscount'] ?? $data['price_after_discount'] ?? 0),
-                'stock' => (int) ($data['stock'] ?? 0),
-                'product_id' => $productRef['id'] ?? $data['productId'] ?? null,
-                'product_name' => $productRef['name'] ?? 'Unknown Product',
-                'created_at' => $this->normalizeDate($data['createdAt'] ?? $data['created_at'] ?? now()),
-                'updated_at' => $this->normalizeDate($data['updatedAt'] ?? $data['updated_at'] ?? now()),
-            ];
-
-            // Create instance and mark as existing so Filament knows it's an Update
-            $variant = new static();
-            $variant->forceFill($attributes);
-            $variant->exists = true;
-
-            return $variant;
-
-        } catch (\Exception $e) {
-            Log::error('ResolveRouteBinding failed for Variant: ' . $e->getMessage());
-            abort(404);
-        }
+        return static::query()
+            ->where($field ?? $this->getRouteKeyName(), $value)
+            ->first();
     }
 
     protected $fillable = [
@@ -172,6 +121,13 @@ class Variant extends Model
 
     public function getRows(): array
     {
+        $query = static::query();
+        if ($productId = $this->getFilterProductId()) {
+            $query->where('product_id', $productId);
+        }
+
+        return $query->get()->toArray();
+
         try {
             // According to openapi.yaml, /v1/variants requires productId as a query parameter
             // If a product filter is set, only fetch variants for that product
@@ -353,65 +309,7 @@ class Variant extends Model
         }
     }
 
-    public function getIncrementing(): bool
-    {
-        return false;
-    }
-
     protected $keyType = 'int';
-
-    /**
-     * Make cache key unique per product ID
-     * This ensures different product filters get different cache entries
-     */
-    public static function getSushiCacheKey(): string
-    {
-        $productId = static::$currentProductId ?? 'none';
-        return static::class . '_variants_product_' . $productId;
-    }
-
-    public function save(array $options = [])
-    {
-        try {
-            $service = new VariantService();
-
-            if ($this->exists && $this->id) {
-                $result = $service->update((string) $this->id, $this->attributesToArray());
-            } else {
-                $result = $service->create($this->attributesToArray());
-            }
-
-            if (isset($result['id'])) {
-                $this->setAttribute('id', $result['id']);
-                $this->exists = true;
-            }
-
-            Log::info('Variant saved via API', ['id' => $this->id ?? 'new']);
-            return true;
-        } catch (\Exception $e) {
-            Log::error('Failed to save variant: ' . $e->getMessage());
-            throw $e;
-        }
-    }
-
-    public function delete(): bool
-    {
-        try {
-            $service = new VariantService();
-
-            // Clear variant features first via API to avoid FK constraint errors on the backend
-            $service->clearVariantFeatures((string) $this->id);
-
-            $service->delete((string) $this->id);
-            
-
-            Log::info('Variant deleted via API', ['id' => $this->id]);
-            return true;
-        } catch (\Exception $e) {
-            Log::error('Failed to delete variant: ' . $e->getMessage());
-            throw $e;
-        }
-    }
 
     public function product()
     {

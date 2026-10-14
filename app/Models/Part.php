@@ -11,11 +11,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Sushi\Sushi;
 
 class Part extends Model
 {
-    use Sushi, \App\Traits\AuditablePrice, HasVendorScope;
+    use \App\Traits\AuditablePrice, HasVendorScope;
 
     protected $table = 'parts';
 
@@ -23,19 +22,11 @@ class Part extends Model
      * Static property to store the product ID filter for the current request
      * This is set by ListParts before querying
      */
-    public static ?int $currentProductId = null;
-
     /**
      * Get the product ID filter - check static property first, then request
      */
     protected function getFilterProductId(): ?int
     {
-        // Check static property first (set by ListParts)
-        if (static::$currentProductId !== null) {
-            return static::$currentProductId;
-        }
-
-        // Fallback to request (for backwards compatibility)
         $productId = request()->query('tableFilters.product_id.value')
             ?? request()->query('filters.product_id');
 
@@ -91,6 +82,13 @@ class Part extends Model
 
     public function getRows(): array
     {
+        $query = static::query();
+        if ($productId = $this->getFilterProductId()) {
+            $query->where('product_id', $productId);
+        }
+
+        return $query->get()->toArray();
+
         try {
             // According to openapi.yaml, /v1/parts requires productId as a query parameter
             // If a product filter is set, only fetch parts for that product
@@ -177,7 +175,7 @@ class Part extends Model
                     'id' => $part['id'] ?? null,
                     'name' => $part['name'] ?? 'Unknown',
                     'price' => (float) ($part['price'] ?? 0),
-                    'type' => (int) ($part['type'] ?? 0),
+                    'type' => isset($part['type']) ? (int) $part['type'] : null,
                     'condition' => isset($part['condition']) ? (int) $part['condition'] : null,
                     'info' => $infoJson, // Store as JSON string
                     'product_id' => $productRef['id'] ?? $productId ?? null,
@@ -230,65 +228,6 @@ class Part extends Model
             return Carbon::parse($value)->toDateTimeString();
         } catch (\Exception $e) {
             return now()->toDateTimeString();
-        }
-    }
-
-    public function getIncrementing(): bool
-    {
-        return false;
-    }
-
-    protected $keyType = 'int';
-
-    /**
-     * Make cache key unique per product ID
-     * This ensures different product filters get different cache entries
-     */
-    /**
-     * Make cache key unique per product ID
-     * This ensures different product filters get different cache entries
-     */
-    public static function getSushiCacheKey(): string
-    {
-        $productId = static::$currentProductId ?? 'none';
-        return static::class . '_parts_product_' . $productId;
-    }
-
-    public function save(array $options = [])
-    {
-        try {
-            $service = new PartService();
-
-            if ($this->exists && $this->id) {
-                $result = $service->update((string) $this->id, $this->attributesToArray());
-            } else {
-                $result = $service->create($this->attributesToArray());
-            }
-
-            if (isset($result['id'])) {
-                $this->setAttribute('id', $result['id']);
-                $this->exists = true;
-            }
-
-            Log::info('Part saved via API', ['id' => $this->id ?? 'new']);
-            return true;
-        } catch (\Exception $e) {
-            Log::error('Failed to save part: ' . $e->getMessage());
-            throw $e;
-        }
-    }
-
-    public function delete(): bool
-    {
-        try {
-            $service = new PartService();
-            $service->delete((string) $this->id);
-
-            Log::info('Part deleted via API', ['id' => $this->id]);
-            return true;
-        } catch (\Exception $e) {
-            Log::error('Failed to delete part: ' . $e->getMessage());
-            throw $e;
         }
     }
 

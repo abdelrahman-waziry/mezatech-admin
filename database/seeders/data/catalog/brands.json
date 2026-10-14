@@ -1,0 +1,32 @@
+[
+    {
+        "id": 1,
+        "name": "Apple",
+        "image": null
+    },
+    {
+        "id": 2,
+        "name": "Samsung",
+        "image": null
+    },
+    {
+        "id": 3,
+        "name": "OPPO",
+        "image": null
+    },
+    {
+        "id": 4,
+        "name": "Vivo",
+        "image": null
+    },
+    {
+        "id": 5,
+        "name": "Other",
+        "image": null
+    },
+    {
+        "id": 6,
+        "name": "Xiaomi",
+        "image": null
+    }
+]

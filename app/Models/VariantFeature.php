@@ -18,7 +18,7 @@ class VariantFeature extends Model
     protected $fillable = [
         'variant_id',
         'feature_id',
-        'feature_value',
+        'feature_value_id',
     ];
 
     /**
@@ -35,6 +35,11 @@ class VariantFeature extends Model
     public function feature(): BelongsTo
     {
         return $this->belongsTo(Feature::class);
+    }
+
+    public function featureValue(): BelongsTo
+    {
+        return $this->belongsTo(FeatureValue::class);
     }
 
 }

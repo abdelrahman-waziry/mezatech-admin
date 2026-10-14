@@ -38,9 +38,7 @@ class VariantsTable
                     ->placeholder('Select a product to view variants')
                     ->default(null)
                     ->query(function ($query, array $data) {
-                        // This filter will be handled by the ListVariants page
-                        // which sets Variant::$currentProductId before querying
-                        return $query;
+                        return $query->when($data['value'] ?? null, fn ($query, $productId) => $query->where('product_id', $productId));
                     }),
             ])
             ->recordActions([

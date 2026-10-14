@@ -7,12 +7,9 @@ use App\Services\TagService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Sushi\Sushi;
 
 class Tag extends Model
 {
-    use Sushi;
-
     protected $table = 'tags';
     // Static cache for request-scoped caching
     protected static array $requestCache = [];
@@ -33,6 +30,8 @@ class Tag extends Model
 
     public function getRows(): array
     {
+        return static::query()->get()->toArray();
+
         // Smart Caching: Request-scoped cache
         if (isset(static::$requestCache['tags_data'])) {
              return static::$requestCache['tags_data'];
@@ -81,48 +80,4 @@ class Tag extends Model
     }
 
 
-    public function getIncrementing(): bool
-    {
-        return false;
-    }
-
-    protected $keyType = 'int';
-
-    public function save(array $options = [])
-    {
-        try {
-            $service = new TagService();
-
-            if ($this->exists && $this->id) {
-                $result = $service->update((string) $this->id, $this->attributesToArray());
-            } else {
-                $result = $service->create($this->attributesToArray());
-            }
-
-            if (isset($result['id'])) {
-                $this->setAttribute('id', $result['id']);
-                $this->exists = true;
-            }
-
-            Log::info('Tag saved via API', ['id' => $this->id ?? 'new']);
-            return true;
-        } catch (\Exception $e) {
-            Log::error('Failed to save tag: ' . $e->getMessage());
-            throw $e;
-        }
-    }
-
-    public function delete(): bool
-    {
-        try {
-            $service = new TagService();
-            $service->delete((string) $this->id);
-
-            Log::info('Tag deleted via API', ['id' => $this->id]);
-            return true;
-        } catch (\Exception $e) {
-            Log::error('Failed to delete tag: ' . $e->getMessage());
-            throw $e;
-        }
-    }
 }

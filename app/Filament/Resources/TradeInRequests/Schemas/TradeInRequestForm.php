@@ -145,8 +145,6 @@ class TradeInRequestForm
                 return [];
             }
 
-            // Set static context for Part model Sushi cache/fetch
-            \App\Models\Part::$currentProductId = $productId;
             $parts = \App\Models\Part::all();
             $conditions = \App\Models\Condition::all();
 

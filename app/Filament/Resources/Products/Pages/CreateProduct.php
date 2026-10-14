@@ -36,14 +36,12 @@ class CreateProduct extends CreateRecord
                 'form_data' => $data
             ]);
 
-            // Create new Product via API directly
-            $service = new \App\Services\ExternalProductService();
-            $result = $service->createProduct($data);
+            \App\Models\Product::create($data);
 
             Notification::make()
                 ->success()
                 ->title('Product Created')
-                ->body('Product has been created successfully via the API.')
+                ->body('Product has been created successfully.')
                 ->send();
 
             $this->redirect($this->getRedirectUrl());

@@ -24,7 +24,7 @@ ssh root@<your-droplet-ip>
 
 ### 1. Clone your Repository
 ```bash
-git clone https://github.com/your-username/your-repo.git app
+git clone https://github.com/abdelrahman-waziry/mezatech-admin.git app
 cd app
 ```
 
@@ -36,10 +36,17 @@ nano .env
 ```
 Update the following values in `.env`:
 - `APP_ENV=production`
-- `APP_URL=http://<your-droplet-ip>`
+- `APP_DEBUG=false`
+- `APP_KEY` (generate with `php artisan key:generate --show`, then set it before starting containers)
+- `APP_URL=https://<your-domain>`
+- `DOMAIN_NAME=your-domain`
 - `DB_CONNECTION=mysql`
 - `DB_HOST=db` (matches the service name in docker-compose)
-- `DB_PASSWORD=your_secure_password`
+- `DB_DATABASE=mezatech_dashboard`
+- `DB_USERNAME=mezatech`
+- `DB_PASSWORD=your_secure_database_password`
+- `DB_ROOT_PASSWORD=your_secure_root_password`
+- `BEST_REPAIR_API_BASE_URL=https://bestrepairegypt.com/v1`
 
 ### 3. Add Swap Space (Crucial for 1GB Droplets)
 1GB RAM might be too low for `npm run build` or Composer. Add 2GB swap:
@@ -57,11 +64,21 @@ Run the application using the production compose file:
 ```bash
 docker compose -f docker-compose.prod.yml up -d --build
 ```
-- `-d`: Detached mode (runs in background).
-- `--build`: Forces a rebuild of the Docker image.
+- The `app` container runs migrations once. The worker and scheduler do not run migrations.
+- `storage:link` and Laravel config/route/view caches are prepared during startup.
+
+After the first deployment, import the catalog once:
+
+```bash
+docker compose -f docker-compose.prod.yml exec app php artisan db:seed --class=CatalogDataSeeder --force
+```
+
+The catalog seeder is upsert-based and does not delete production rows, but run it only when importing a new catalog snapshot.
+
+Create the first Filament administrator manually or through a controlled release procedure. Do not use the development default-password seeder in production.
 
 ## Step 4: Verification
-Visit `http://<your-droplet-ip>` in your browser.
+Visit `https://<your-domain>` in your browser.
 
 ## Updates / New Deployments
 To deploy changes:
@@ -69,6 +86,13 @@ To deploy changes:
 cd app
 git pull origin main
 docker compose -f docker-compose.prod.yml up -d --build
+```
+
+Check the deployment:
+```bash
+docker compose -f docker-compose.prod.yml ps
+docker compose -f docker-compose.prod.yml logs --tail=100 app
+docker compose -f docker-compose.prod.yml exec app php artisan about
 ```
 
 ## Troubleshooting

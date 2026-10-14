@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Brand;
 use App\Models\Tag;
+use App\Models\Customer;
+use App\Models\Transaction;
 use App\Services\PriceCalculationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -35,6 +37,22 @@ class ProductController extends Controller
         // Filter by minimum price
         if ($request->has('minPrice')) {
             $query->where('minimum_buying_price', '>=', $request->minPrice);
+        }
+
+        if ($request->has('maxPrice')) {
+            $query->where('minimum_buying_price', '<=', $request->maxPrice);
+        }
+
+        if ($request->has('brands')) {
+            $brandIds = is_array($request->brands)
+                ? $request->brands
+                : explode(',', $request->brands);
+
+            $query->whereIn('brand_id', array_filter($brandIds, 'is_numeric'));
+        }
+
+        if ($request->has('condition')) {
+            $query->where('condition', $request->condition);
         }
 
         $products = $query->get();
@@ -193,20 +211,35 @@ class ProductController extends Controller
             'partsWithValuesMap' => 'required|array',
         ]);
 
-        $result = app(PriceCalculationService::class)->calculate(
-            (int) $validated['variantId'],
-            $validated['partsWithValuesMap']
-        );
+        $result = DB::transaction(function () use ($validated): array {
+            $calculation = app(PriceCalculationService::class)->calculate(
+                (int) $validated['variantId'],
+                $validated['partsWithValuesMap'],
+                $validated['repairedPartsBefore'] ?? []
+            );
 
-        return response()->json([
-            'data' => [
-                'variant' => $result['variant'],
-                'customer' => $validated['customer'],
-                'partsTotal' => $result['partsTotal'],
-                'variantPrice' => $result['variantPrice'],
-                'finalPrice' => $result['finalPrice'],
-            ],
-        ]);
+            $customerData = $validated['customer'];
+            $customer = Customer::firstOrCreate(
+                [
+                    'name' => $customerData['name'],
+                    'phone_number' => $customerData['phoneNumber'],
+                ],
+                [
+                    'email' => $customerData['email'],
+                    'password' => str()->random(40),
+                ],
+            );
+
+            Transaction::create([
+                'customer_id' => $customer->id,
+                'product_id' => $calculation['variant']->product_id,
+                'price' => $calculation['finalPrice'],
+            ]);
+
+            return $calculation;
+        });
+
+        return response()->json(['price' => $result['finalPrice']]);
     }
 }
 

@@ -2,16 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\PartService;
+use App\Models\Part;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PartController extends Controller
 {
-    public function __construct(private readonly PartService $partService)
-    {
-    }
-
     /**
      * Display a listing of the resource.
      */
@@ -21,14 +17,8 @@ class PartController extends Controller
             'productId' => ['required', 'integer'],
         ]);
 
-        $payload = $this->partService->fetchAll([
-            'productId' => $validated['productId'],
-        ]);
-
-        $parts = $this->extractParts($payload);
-
         return response()->json([
-            'parts' => $parts,
+            'parts' => Part::where('product_id', $validated['productId'])->get(),
         ]);
     }
 
@@ -39,9 +29,7 @@ class PartController extends Controller
     {
         $data = $this->validatePart($request);
 
-        $created = $this->partService->create($data);
-
-        return response()->json($created, 201);
+        return response()->json(Part::create($data), 201);
     }
 
     /**
@@ -49,7 +37,7 @@ class PartController extends Controller
      */
     public function show(string $id): JsonResponse
     {
-        $part = $this->partService->fetchOne($id);
+        $part = Part::find($id);
 
         if (!$part) {
             return response()->json(['message' => 'Part not found'], 404);
@@ -65,9 +53,9 @@ class PartController extends Controller
     {
         $data = $this->validatePart($request, true);
 
-        $updated = $this->partService->update($id, $data);
-
-        return response()->json($updated);
+        $part = Part::findOrFail($id);
+        $part->update($data);
+        return response()->json($part->fresh());
     }
 
     /**
@@ -75,7 +63,7 @@ class PartController extends Controller
      */
     public function destroy(string $id): JsonResponse
     {
-        $this->partService->delete($id);
+        Part::findOrFail($id)->delete();
 
         return response()->json(null, 204);
     }
@@ -100,28 +88,8 @@ class PartController extends Controller
             $validated['product_id'] = $validated['productId'];
         }
 
+        unset($validated['product'], $validated['productId']);
         return $validated;
-    }
-
-    protected function extractParts(array $payload): array
-    {
-        if (isset($payload['parts']) && is_array($payload['parts'])) {
-            return $payload['parts'];
-        }
-
-        if (isset($payload['data']['parts']) && is_array($payload['data']['parts'])) {
-            return $payload['data']['parts'];
-        }
-
-        if (isset($payload['data']) && is_array($payload['data'])) {
-            return $payload['data'];
-        }
-
-        if (isset($payload['items']) && is_array($payload['items'])) {
-            return $payload['items'];
-        }
-
-        return is_array($payload) ? array_values($payload) : [];
     }
 }
 

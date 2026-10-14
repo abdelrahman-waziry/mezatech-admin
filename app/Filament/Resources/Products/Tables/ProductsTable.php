@@ -65,13 +65,12 @@ class ProductsTable
                     ->requiresConfirmation()
                     ->action(function ($record) {
                         try {
-                            $service = new \App\Services\ExternalProductService();
-                            $service->deleteProduct((string) $record['id']);
+                            \App\Models\Product::findOrFail($record['id'])->delete();
 
                             \Filament\Notifications\Notification::make()
                                 ->success()
                                 ->title('Product Deleted')
-                                ->body('Product has been deleted successfully via the API.')
+                                ->body('Product has been deleted successfully.')
                                 ->send();
 
                             // Refresh the table

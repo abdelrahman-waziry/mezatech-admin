@@ -69,13 +69,12 @@ class FeaturesTable
                     ->requiresConfirmation()
                     ->action(function ($record) {
                         try {
-                            $service = new \App\Services\FeatureService();
-                            $service->delete((string) $record['id']);
+                            \App\Models\Feature::findOrFail($record['id'])->delete();
 
                             \Filament\Notifications\Notification::make()
                                 ->success()
                                 ->title('Feature Deleted')
-                                ->body('Feature has been deleted successfully via the API.')
+                                ->body('Feature has been deleted successfully.')
                                 ->send();
 
                             // Refresh the table

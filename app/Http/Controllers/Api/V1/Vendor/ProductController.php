@@ -27,7 +27,7 @@ class ProductController extends Controller
     public function index(): JsonResponse
     {
         return response()->json([
-            'data' => Product::all(['id', 'name', 'sku', 'brand_name', 'condition']),
+            'data' => Product::with('brand')->get(['id', 'name', 'sku', 'brand_id', 'condition']),
         ]);
     }
 }

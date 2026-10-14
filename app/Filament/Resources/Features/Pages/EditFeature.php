@@ -28,24 +28,8 @@ class EditFeature extends EditRecord
 
     protected function fetchProduct(int $productId): void
     {
-        try {
-            $service = new \App\Services\ExternalProductService();
-            $productData = $service->fetchOne((string)$productId);
-            
-            if ($productData) {
-                $this->product = $productData;
-                
-                \Illuminate\Support\Facades\Log::info('EditFeature: Fetched product', [
-                    'product_id' => $productId,
-                    'product_data' => $productData
-                ]);
-            }
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('EditFeature: Failed to fetch product', [
-                'product_id' => $productId,
-                'error' => $e->getMessage()
-            ]);
-        }
+        $product = \App\Models\Product::with('features.values')->find($productId);
+        $this->product = $product?->toArray();
     }
 
     /**
@@ -119,32 +103,7 @@ class EditFeature extends EditRecord
             }
         }
         
-        // Fallback: Fetch full data from FeatureService API if product not available
-        try {
-            $service = new \App\Services\FeatureService();
-            $featureData = $service->fetchOne((string)$key);
-            
-            if ($featureData) {
-                // Store the full API data in the model's attributes for form binding
-                $record->id = $featureData['id'] ?? $key;
-                $record->name = $featureData['name'] ?? '';
-                $record->product_id = $featureData['productId'] ?? $featureData['product_id'] ?? null;
-                
-                // Store values in the model (even though it's not in the schema)
-                $record->setAttribute('values', $featureData['values'] ?? []);
-                
-                \Illuminate\Support\Facades\Log::info('EditFeature: resolveRecord loaded from FeatureService', [
-                    'id' => $key,
-                    'product_id' => $record->product_id,
-                    'feature_data' => $featureData
-                ]);
-            }
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('EditFeature: Failed to load full data in resolveRecord', [
-                'error' => $e->getMessage()
-            ]);
-        }
-        
+        $record->setAttribute('values', $record->values()->get()->toArray());
         return $record;
     }
 

@@ -8,12 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Sushi\Sushi;
 use Carbon\Carbon;
 
 class Product extends Model
 {
-    use Sushi;
     use HasVendorScope;
 
     protected $table = 'products';
@@ -25,6 +23,8 @@ class Product extends Model
         'id',
         'name',
         'sku',
+        'description',
+        'notes',
         'brand_id',
         'brand_name',
         'minimum_buying_price',
@@ -58,6 +58,8 @@ class Product extends Model
 
     public function getRows(): array
     {
+        return static::query()->get()->toArray();
+
         Log::info('Product::getRows called - checking cache');
         Log::info('Product::getRows called - checking cache');
         
@@ -200,59 +202,19 @@ class Product extends Model
         ];
     }
 
-    public function getIncrementing()
+    public function brand()
     {
-        return false;
+        return $this->belongsTo(Brand::class);
     }
 
-    protected $keyType = 'int';
-
-    /**
-     * Override save to use API for creating/updating products
-     * Do NOT save to database - only call API
-     */
-    public function save(array $options = [])
+    public function tags()
     {
-        try {
-            $service = new \App\Services\ExternalProductService();
-            
-            if ($this->exists && isset($this->id)) {
-                // Update existing product
-                $result = $service->updateProduct((string) $this->id, $this->attributes);
-            } else {
-                // Create new product
-                $result = $service->createProduct($this->attributes);
-            }
-
-            // Update attributes with API response but don't actually save to DB
-            if (isset($result['id'])) {
-                $this->setAttribute('id', $result['id']);
-                $this->exists = true;
-            }
-
-            Log::info('Product saved via API', ['id' => $this->id ?? 'new']);
-            return true;
-        } catch (\Exception $e) {
-            Log::error('Failed to save product: ' . $e->getMessage());
-            throw $e;
-        }
+        return $this->belongsToMany(Tag::class);
     }
 
-    /**
-     * Override delete to use API for deleting products
-     */
-    public function delete()
+    public function features()
     {
-        try {
-            $service = new \App\Services\ExternalProductService();
-            $service->deleteProduct((string) $this->id);
-            
-            Log::info('Product deleted via API', ['id' => $this->id]);
-            return true;
-        } catch (\Exception $e) {
-            Log::error('Failed to delete product: ' . $e->getMessage());
-            throw $e;
-        }
+        return $this->hasMany(Feature::class);
     }
 
     public function variants()

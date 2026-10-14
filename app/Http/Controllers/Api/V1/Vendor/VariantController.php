@@ -30,10 +30,9 @@ class VariantController extends Controller
      */
     public function index(Product $product): JsonResponse
     {
-        Variant::$currentProductId = $product->id;
-
         return response()->json([
-            'data' => Variant::all(['id', 'name', 'buying_price', 'price_before_discount', 'discount', 'price_after_discount', 'stock', 'product_id']),
+            'data' => Variant::where('product_id', $product->id)
+                ->get(['id', 'name', 'buying_price', 'price_before_discount', 'discount', 'price_after_discount', 'stock', 'product_id']),
         ]);
     }
 }

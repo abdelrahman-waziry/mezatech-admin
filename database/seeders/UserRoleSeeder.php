@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Models\Role;
 
 class UserRoleSeeder extends Seeder
 {
@@ -14,7 +13,11 @@ class UserRoleSeeder extends Seeder
      */
     public function run(): void
     {
-        $password = Hash::make('password'); // Default password for all
+        if (! app()->environment(['local', 'testing']) && ! filter_var(env('SEED_DEFAULT_USERS', false), FILTER_VALIDATE_BOOL)) {
+            return;
+        }
+
+        $password = Hash::make('password');
 
         // Super Admin
         $superAdmin = User::firstOrCreate(

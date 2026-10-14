@@ -9,31 +9,57 @@ use App\Http\Controllers\VariantController;
 use App\Http\Controllers\PartController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\FeatureController;
+use App\Http\Controllers\TagController;
+use App\Http\Controllers\CustomerController;
 
 Route::middleware('api')->prefix('v1')->group(function () {
    // Brand Routes
-    Route::apiResource('brands', BrandController::class);
+    Route::get('brands', [BrandController::class, 'index']);
+    Route::get('brands/{brand}', [BrandController::class, 'show']);
+
+    // Feature and tag CRUD routes from the BestRepair API
+    Route::get('features', [FeatureController::class, 'index']);
+    Route::get('features/{feature}', [FeatureController::class, 'show']);
+    Route::get('tags', [TagController::class, 'index']);
+    Route::get('tags/{tag}', [TagController::class, 'show']);
 
     // Condition Routes
-    Route::apiResource('conditions', ConditionController::class);
+    Route::get('conditions', [ConditionController::class, 'index']);
+    Route::get('conditions/{condition}', [ConditionController::class, 'show']);
 
     // Product Routes
-    Route::apiResource('products', ProductController::class);
+    Route::get('products', [ProductController::class, 'index']);
+    Route::get('products/{product}', [ProductController::class, 'show']);
     Route::post('products/calculate', [ProductController::class, 'calculatePrice']);
+    Route::post('pricing/calculate', [ProductController::class, 'calculatePrice']);
 
     // Variant Routes
-    Route::apiResource('variants', VariantController::class);
+    Route::get('variants', [VariantController::class, 'index']);
+    Route::get('variants/{variant}', [VariantController::class, 'show']);
 
     // Part Routes
-    Route::apiResource('parts', PartController::class);
+    Route::get('parts', [PartController::class, 'index']);
+    Route::get('parts/{part}', [PartController::class, 'show']);
 
     // File Routes
-    Route::post('files', [FileController::class, 'store']);
     Route::get('files', [FileController::class, 'index']);
-    Route::delete('files', [FileController::class, 'destroy']);
 
     // Admin Routes
     Route::post('admin/login', [AdminController::class, 'login']);
+    Route::middleware('auth:sanctum')->apiResource('admin/customers', CustomerController::class);
+
+    Route::middleware('auth:sanctum')->group(function (): void {
+        Route::apiResource('brands', BrandController::class)->only(['store', 'update', 'destroy']);
+        Route::apiResource('features', FeatureController::class)->only(['store', 'update', 'destroy']);
+        Route::apiResource('tags', TagController::class)->only(['store', 'update', 'destroy']);
+        Route::apiResource('conditions', ConditionController::class)->only(['store', 'update', 'destroy']);
+        Route::apiResource('products', ProductController::class)->only(['store', 'update', 'destroy']);
+        Route::apiResource('variants', VariantController::class)->only(['store', 'update', 'destroy']);
+        Route::apiResource('parts', PartController::class)->only(['store', 'update', 'destroy']);
+        Route::post('files', [FileController::class, 'store']);
+        Route::delete('files', [FileController::class, 'destroy']);
+    });
 
     // Analytics Ingestion Routes (Public)
     Route::prefix('analytics')->group(function () {
