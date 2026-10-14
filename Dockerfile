@@ -72,8 +72,7 @@ RUN composer install \
     --optimize-autoloader \
     --no-interaction \
     --prefer-dist \
-    --no-scripts \
-    && php artisan package:discover --ansi
+    --no-scripts
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \

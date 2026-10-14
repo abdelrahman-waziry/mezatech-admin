@@ -22,6 +22,8 @@ if [ $count -ge $max_tries ]; then
     exit 1
 fi
 
+php artisan package:discover --ansi
+
 # Clear all caches (Important for TrustProxies/ForceHTTPS)
 echo "Clearing caches..."
 php artisan config:clear
