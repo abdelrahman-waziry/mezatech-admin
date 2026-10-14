@@ -23,15 +23,6 @@ return new class extends Migration
             });
         }
 
-        $hasPrimaryKey = collect(Schema::getIndexes('products'))
-            ->contains(fn (array $index): bool => ($index['name'] ?? '') === 'PRIMARY');
-
-        if (! $hasPrimaryKey) {
-            Schema::table('products', function (Blueprint $table): void {
-                $table->primary('id');
-            });
-        }
-
         Schema::create('tags', function (Blueprint $table): void {
             $table->id();
             $table->string('name')->unique();
