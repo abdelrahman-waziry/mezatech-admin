@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\TradeInRequests\Tables;
 
+use App\Models\TradeInRequest;
 use Filament\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -30,25 +31,7 @@ class TradeInRequestsTable
                 TextColumn::make('variant_id')
                     ->label('Variant Name')
                     ->sortable()
-                    ->formatStateUsing(function ($state) {
-                        if (!$state) return '-';
-                        return \Illuminate\Support\Facades\Cache::remember('variant_name_' . $state, 3600, function () use ($state) {
-                            try {
-                                $token = app(\App\Services\ApiTokenService::class)->getToken();
-                                $response = \Illuminate\Support\Facades\Http::withHeaders([
-                                    'Authorization' => 'Bearer ' . $token,
-                                    'Accept' => 'application/json',
-                                ])->timeout(2)->get('https://bestrepairegypt.com/v1/variants/' . $state);
-
-                                if ($response->successful()) {
-                                    return $response->json()['name'] ?? 'Unknown ' . $state;
-                                }
-                            } catch (\Exception $e) {
-                                // Fallback
-                            }
-                            return 'ID: ' . $state;
-                        });
-                    }),
+                    ->formatStateUsing(fn (TradeInRequest $record): string => $record->variantDisplayName()),
                 TextColumn::make('trade_in_quote')
                     ->label('Quote')
                     ->money('EGP')
@@ -201,4 +184,3 @@ class TradeInRequestsTable
             ]);
     }
 }
-

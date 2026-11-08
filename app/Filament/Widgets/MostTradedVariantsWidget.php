@@ -4,9 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\TradeInRequest;
 use Filament\Widgets\ChartWidget;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 
 class MostTradedVariantsWidget extends ChartWidget
 {
@@ -23,6 +21,7 @@ class MostTradedVariantsWidget extends ChartWidget
     protected function getData(): array
     {
         $data = TradeInRequest::query()
+            ->with('variant')
             ->select('variant_id', DB::raw('COUNT(*) as count'))
             ->whereNotNull('variant_id')
             ->groupBy('variant_id')
@@ -43,25 +42,7 @@ class MostTradedVariantsWidget extends ChartWidget
             ];
         }
 
-        // Resolve variant names via API (cached)
-        $labels = $data->map(function ($item) {
-            return Cache::remember('variant_name_' . $item->variant_id, 3600, function () use ($item) {
-                try {
-                    $token = app(\App\Services\ApiTokenService::class)->getToken();
-                    $response = Http::withHeaders([
-                        'Authorization' => 'Bearer ' . $token,
-                        'Accept' => 'application/json',
-                    ])->timeout(2)->get('https://bestrepairegypt.com/v1/variants/' . $item->variant_id);
-
-                    if ($response->successful()) {
-                        return $response->json()['name'] ?? 'ID: ' . $item->variant_id;
-                    }
-                } catch (\Exception $e) {
-                    // Fallback
-                }
-                return 'ID: ' . $item->variant_id;
-            });
-        });
+        $labels = $data->map(fn (TradeInRequest $item): string => $item->variantDisplayName());
 
         $colors = [
             '#6366f1', '#8b5cf6', '#a78bfa', '#c084fc',

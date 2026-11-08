@@ -20,26 +20,7 @@ class TradeInRequestForm
                             ->hidden(),
                         \Filament\Forms\Components\Placeholder::make('variant_name')
                             ->label('Variant Name')
-                            ->content(function ($record) {
-                                if (!$record || !$record->variant_id) {
-                                    return '-';
-                                }
-                                try {
-                                    $token = app(\App\Services\ApiTokenService::class)->getToken();
-                                    $response = \Illuminate\Support\Facades\Http::withHeaders([
-                                        'Authorization' => 'Bearer ' . $token,
-                                        'Accept' => 'application/json',
-                                    ])->timeout(5)->get('https://bestrepairegypt.com/v1/variants/' . $record->variant_id);
-
-                                    if ($response->successful()) {
-                                        $data = $response->json();
-                                        return $data['name'] ?? 'Unknown';
-                                    }
-                                } catch (\Exception $e) {
-                                    return 'Error loading name';
-                                }
-                                return 'Not Found';
-                            }),
+                            ->content(fn ($record): string => $record?->variantDisplayName() ?? '-'),
                         \Filament\Forms\Components\TextInput::make('trade_in_quote')
                             ->label('Quote')
                             ->prefix('EGP')

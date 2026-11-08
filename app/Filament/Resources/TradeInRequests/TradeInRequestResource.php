@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
 
 class TradeInRequestResource extends Resource
@@ -23,6 +24,11 @@ class TradeInRequestResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
     protected static string|UnitEnum|null $navigationGroup = 'Trade-in';
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->with('variant');
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -47,4 +53,3 @@ class TradeInRequestResource extends Resource
         ];
     }
 }
-

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TradeInRequest extends Model
 {
@@ -19,6 +20,7 @@ class TradeInRequest extends Model
         'admin_comment',
         'selected_options',
         'customer_answers',
+        'condition_answers',
     ];
 
     protected $casts = [
@@ -29,6 +31,20 @@ class TradeInRequest extends Model
         'status' => 'string',
         'selected_options' => 'array',
         'customer_answers' => 'array',
+        'condition_answers' => 'array',
     ];
-}
 
+    public function variant(): BelongsTo
+    {
+        return $this->belongsTo(Variant::class);
+    }
+
+    public function variantDisplayName(): string
+    {
+        if (! $this->variant_id) {
+            return '-';
+        }
+
+        return $this->variant?->name ?? 'Variant not found (ID: '.$this->variant_id.')';
+    }
+}
