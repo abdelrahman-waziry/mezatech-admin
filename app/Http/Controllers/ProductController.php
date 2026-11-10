@@ -8,6 +8,7 @@ use App\Models\Tag;
 use App\Models\Customer;
 use App\Models\Transaction;
 use App\Services\PriceCalculationService;
+use App\Services\TradeInQuoteService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -241,5 +242,35 @@ class ProductController extends Controller
 
         return response()->json(['price' => $result['finalPrice']]);
     }
-}
 
+    /**
+     * Calculate a trade-in price preview without creating customer or transaction records.
+     */
+    public function calculateTradeInPrice(Request $request, TradeInQuoteService $quoteService): JsonResponse
+    {
+        $validated = $request->validate([
+            'variantId' => 'required|exists:variants,id',
+            'repairedPartsBefore' => 'nullable|array',
+            'repairedPartsBefore.*' => 'integer',
+            'partsWithValuesMap' => 'required_without:conditionAnswers|array',
+            'conditionAnswers' => 'sometimes|array',
+        ]);
+
+        if (isset($validated['conditionAnswers'])) {
+            return response()->json([
+                'price' => $quoteService->calculate(
+                    (int) $validated['variantId'],
+                    $validated['conditionAnswers']
+                ),
+            ]);
+        }
+
+        $calculation = app(PriceCalculationService::class)->calculate(
+            (int) $validated['variantId'],
+            $validated['partsWithValuesMap'],
+            $validated['repairedPartsBefore'] ?? []
+        );
+
+        return response()->json(['price' => $calculation['finalPrice']]);
+    }
+}

@@ -144,6 +144,29 @@ paths:
         - TradeInRequests
       summary: Get all trade-in requests
       operationId: getTradeInRequests
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, accepted, rejected, confirmed, closed]
+        - name: search
+          in: query
+          schema:
+            type: string
+            maxLength: 100
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 15
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
       responses:
         '200':
           description: List of trade-in requests
@@ -171,12 +194,46 @@ paths:
       responses:
         '201':
           description: Trade-in request created
+        '422':
+          description: Validation failed; the response contains a message and field-specific errors.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  errors:
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: string
         '401':
           description: Unauthorized
         '403':
           description: Forbidden
 
   /v1/trade-in-requests/{id}:
+    get:
+      tags:
+        - TradeInRequests
+      summary: Get a trade-in request
+      operationId: getTradeInRequest
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Trade-in request details
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
     put:
       tags:
         - TradeInRequests
@@ -406,6 +463,29 @@ paths:
           description: Unauthorized
         '403':
           description: Forbidden
+
+  /v1/pricing/calculate:
+    post:
+      tags:
+        - Products
+      summary: Calculate a trade-in price preview
+      description: Calculates a price without creating customer or transaction records.
+      operationId: calculateTradeInPrice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductPriceCalculationRequest'
+      responses:
+        '200':
+          description: Calculated trade-in price
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductPriceInfoDTO'
+        '422':
+          description: Validation failed
 
   /v1/brands:
     get:
@@ -1626,12 +1706,14 @@ components:
           description: A map with partId as key and part condition as value
           additionalProperties:
             type: string
+        conditionAnswers:
+          type: object
+          description: Trade-in questionnaire answers used for server-side quote calculation
+          additionalProperties: true
         customer:
           $ref: '#/components/schemas/CustomerDTO'
       required:
         - variantId
-        - repairedPartsBefore
-        - partsWithValuesMap
 
     ProductPriceInfoDTO:
       type: object
@@ -1749,25 +1831,7 @@ components:
         variantId:
           type: integer
           format: int64
-        tradeInQuote:
-          type: number
-        customerName:
-          type: string
-        customerEmail:
-          type: string
-        customerPhone:
-          type: string
-        status:
-          type: string
-          enum: [pending, rejected, accepted]
-        createdAt:
-          type: string
-          format: date-time
-
-    CreateTradeInRequestDTO:
-      type: object
-      properties:
-        variantId:
+        productId:
           type: integer
           format: int64
         tradeInQuote:
@@ -1778,15 +1842,127 @@ components:
           type: string
         customerPhone:
           type: string
+        selectedOptions:
+          type: object
+          additionalProperties:
+            type: integer
+        customerAnswers:
+          type: object
+          additionalProperties: true
+        conditionAnswers:
+          type: object
+          additionalProperties: true
         status:
           type: string
-          enum: [pending, rejected, accepted]
+          enum: [pending, rejected, accepted, confirmed, closed]
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateTradeInRequestDTO:
+      type: object
+      properties:
+        variantId:
+          type: integer
+          format: int64
+          description: ID of an existing variant.
+        tradeInQuote:
+          type: number
+          description: Ignored on creation; recalculated from conditionAnswers.
+          minimum: 0
+        customerName:
+          type: string
+          maxLength: 255
+        customerEmail:
+          type: string
+          format: email
+          maxLength: 255
+        customerPhone:
+          type: string
+          maxLength: 255
+        selectedOptions:
+          type: object
+          additionalProperties: true
+        customerAnswers:
+          type: object
+          additionalProperties: true
+        conditionAnswers:
+          $ref: '#/components/schemas/TradeInConditionAnswers'
+        status:
+          type: string
+          description: Ignored on creation; new requests are always pending.
       required:
         - variantId
-        - tradeInQuote
         - customerName
+        - customerEmail
         - customerPhone
-        - status
+        - conditionAnswers
+
+    TradeInConditionAnswers:
+      type: object
+      description: >
+        All nine answers are required. When repaired is authorised or thirdparty,
+        repaired_parts is required. When cracks is cracked, hardware is issue, cameras
+        is bad, or connectivity is bad, the corresponding parts array is required.
+      required: [power, repaired, battery, cracks, scratches, hardware, cameras, connectivity, biometrics]
+      properties:
+        power:
+          type: string
+          enum: ['yes', 'no']
+        repaired:
+          type: string
+          enum: [never, authorised, thirdparty]
+        battery:
+          type: string
+          enum: ['90', '85', '80', below80]
+        cracks:
+          type: string
+          enum: [intact, cracked]
+        scratches:
+          type: string
+          enum: [mint, light, deep]
+        hardware:
+          type: string
+          enum: [all_ok, issue]
+        cameras:
+          type: string
+          enum: [ok, bad]
+        connectivity:
+          type: string
+          enum: [ok, bad]
+        biometrics:
+          type: string
+          enum: [ok, bad]
+        repaired_parts:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            enum: [screen, battery, back, charging, camera, other]
+        cracked_parts:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            enum: [front, back]
+        hardware_parts:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            enum: [charging, buttons, audio, sensors]
+        camera_parts:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            enum: [front, back]
+        connectivity_parts:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            enum: [wifi, bluetooth, gps, nfc]
 
     UpdateTradeInRequestDTO:
       type: object
@@ -1813,3 +1989,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TradeInRequestDTO'
+        meta:
+          type: object
+          properties:
+            current_page:
+              type: integer
+            last_page:
+              type: integer
+            per_page:
+              type: integer
+            total:
+              type: integer
