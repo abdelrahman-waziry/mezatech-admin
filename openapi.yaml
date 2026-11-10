@@ -1861,6 +1861,12 @@ components:
 
     CreateTradeInRequestDTO:
       type: object
+      description: >
+        Supply conditionAnswers for a server-calculated quote, or tradeInQuote
+        without conditionAnswers to store the client-supplied quote.
+      anyOf:
+        - required: [conditionAnswers]
+        - required: [tradeInQuote]
       properties:
         variantId:
           type: integer
@@ -1868,8 +1874,9 @@ components:
           description: ID of an existing variant.
         tradeInQuote:
           type: number
-          description: Ignored on creation; recalculated from conditionAnswers.
+          description: Required and stored as supplied when conditionAnswers is omitted; otherwise ignored.
           minimum: 0
+          maximum: 99999999.99
         customerName:
           type: string
           maxLength: 255
@@ -1896,7 +1903,6 @@ components:
         - customerName
         - customerEmail
         - customerPhone
-        - conditionAnswers
 
     TradeInConditionAnswers:
       type: object

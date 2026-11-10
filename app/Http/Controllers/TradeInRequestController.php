@@ -77,20 +77,19 @@ class TradeInRequestController extends Controller
         $validated = $request->validate([
             'variantId' => 'required|integer|exists:variants,id',
             'productId' => 'sometimes|integer',
-            'tradeInQuote' => 'sometimes|numeric|min:0',
+            'tradeInQuote' => 'required_without:conditionAnswers|numeric|min:0|max:99999999.99',
             'customerName' => 'required|string|max:255',
             'customerEmail' => 'required|email|max:255',
             'customerPhone' => 'required|string|max:255',
             'selectedOptions' => 'sometimes|array',
             'customerAnswers' => 'sometimes|array',
-            'conditionAnswers' => 'required|array',
+            'conditionAnswers' => 'sometimes|required|array',
         ]);
 
         $variant = Variant::findOrFail($validated['variantId']);
-        $quote = $quoteService->calculate(
-            (int) $validated['variantId'],
-            $validated['conditionAnswers']
-        );
+        $quote = isset($validated['conditionAnswers'])
+            ? $quoteService->calculate((int) $validated['variantId'], $validated['conditionAnswers'])
+            : $validated['tradeInQuote'];
 
         $tradeInRequest = TradeInRequest::create([
             'variant_id' => $validated['variantId'],
@@ -102,7 +101,7 @@ class TradeInRequestController extends Controller
             'status' => 'pending',
             'selected_options' => $validated['selectedOptions'] ?? null,
             'customer_answers' => $validated['customerAnswers'] ?? null,
-            'condition_answers' => $validated['conditionAnswers'],
+            'condition_answers' => $validated['conditionAnswers'] ?? null,
         ]);
 
         return response()->json($this->formatRequest($tradeInRequest), 201);
